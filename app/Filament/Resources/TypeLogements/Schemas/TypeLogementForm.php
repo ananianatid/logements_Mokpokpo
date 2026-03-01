@@ -12,11 +12,11 @@ class TypeLogementForm
     {
         return $schema
             ->components([
-                TextInput::make('nom')
+                \Filament\Forms\Components\TextInput::make('nom')
                     ->required(),
-                Textarea::make('caracteristique')
+                \Filament\Forms\Components\Textarea::make('caracteristique')
                     ->columnSpanFull(),
-                TextInput::make('prix')
+                \Filament\Forms\Components\TextInput::make('prix')
                     ->required()
                     ->numeric(),
             ]);

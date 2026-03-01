@@ -11,10 +11,10 @@ class BatimentForm
     {
         return $schema
             ->components([
-                TextInput::make('nom')
+                \Filament\Forms\Components\TextInput::make('nom')
                     ->required(),
-                TextInput::make('adresse'),
-                TextInput::make('nombre_etages')
+                \Filament\Forms\Components\TextInput::make('adresse'),
+                \Filament\Forms\Components\TextInput::make('nombre_etages')
                     ->numeric(),
             ]);
     }

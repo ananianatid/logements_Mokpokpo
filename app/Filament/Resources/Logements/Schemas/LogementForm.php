@@ -12,21 +12,21 @@ class LogementForm
     {
         return $schema
             ->components([
-            TextInput::make('numero_chambre')
+            \Filament\Forms\Components\TextInput::make('numero_chambre')
             ->label('Numéro de Chambre')
             ->required(),
 
-            Select::make('batiment_id')
+            \Filament\Forms\Components\Select::make('batiment_id')
             ->label('Bâtiment')
             ->relationship('batiment', 'nom')
             ->required(),
 
-            Select::make('type_logement_id')
+            \Filament\Forms\Components\Select::make('type_logement_id')
             ->label('Type de Logement')
             ->relationship('type_logement', 'nom')
             ->required(),
 
-            Select::make('statut')
+            \Filament\Forms\Components\Select::make('statut')
             ->options([
                 'Disponible' => 'Disponible',
                 'Réservé' => 'Réservé',
@@ -36,7 +36,7 @@ class LogementForm
             ->required()
             ->default('Disponible'),
 
-            TextInput::make('etage')
+            \Filament\Forms\Components\TextInput::make('etage')
             ->label('Étage')
             ->numeric(),
         ]);

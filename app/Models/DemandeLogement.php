@@ -48,4 +48,9 @@ class DemandeLogement extends Model
     {
         return $this->belongsTo(Logement::class , 'logement_propose_id');
     }
+
+    public function contrat()
+    {
+        return $this->hasOne(ContratHabitation::class , 'demande_logement_id');
+    }
 }

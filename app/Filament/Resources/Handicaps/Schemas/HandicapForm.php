@@ -12,9 +12,9 @@ class HandicapForm
     {
         return $schema
             ->components([
-                TextInput::make('nom')
+                \Filament\Forms\Components\TextInput::make('nom')
                     ->required(),
-                Textarea::make('description')
+                \Filament\Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
             ]);
     }

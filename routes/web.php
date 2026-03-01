@@ -17,6 +17,9 @@ Route::middleware('auth')->group(function () {
     // Demandes de logement
     Route::get('/demande-logement/nouvelle', [\App\Http\Controllers\DemandeLogementController::class , 'create'])->name('demandes.create');
     Route::post('/demande-logement/nouvelle', [\App\Http\Controllers\DemandeLogementController::class , 'store'])->name('demandes.store');
+
+    // Incidents
+    Route::post('/incidents', [\App\Http\Controllers\IncidentController::class , 'store'])->name('incidents.store');
 });
 
 Route::post('/login', [AuthController::class , 'login'])->name('login.post');

@@ -32,4 +32,9 @@ class Etudiant extends Model
     {
         return $this->hasMany(DemandeLogement::class);
     }
+
+    public function contrats()
+    {
+        return $this->hasMany(ContratHabitation::class);
+    }
 }

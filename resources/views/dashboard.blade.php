@@ -120,77 +120,205 @@
                     @endif
                 </div>
 
-                <!-- Applications Status -->
+                <!-- Applications / Housing Status -->
                 <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
                     <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <i class="fas fa-home text-blue-500"></i>
+                        @if($contrat && $contrat->statut === 'Actif')
+                        Mon Logement
+                        @else
                         Mes Demandes
+                        @endif
                     </h2>
 
-                    @php
-                    $demande = $user->etudiant ? $user->etudiant->demandeLogements()->latest()->first() : null;
-                    @endphp
-
-                    @if($demande)
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Demande du {{
-                                    $demande->date_soumission->format('d/m/Y') }}</span>
-                                <h4 class="font-bold text-gray-800">{{ $demande->type_logement ?
-                                    $demande->type_logement->nom : 'Type non spécifié' }}</h4>
+                    @if($contrat && $contrat->statut === 'Actif')
+                    <!-- ACTIVE RESIDENT VIEW -->
+                    <div class="space-y-4">
+                        <div class="bg-blue-600 text-white p-4 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold uppercase opacity-80">Chambre</span>
+                                <span class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold">Actif</span>
                             </div>
-                            @php
-                            $statusClasses = [
-                            'En attente' => 'bg-yellow-100 text-yellow-800',
-                            'En cours' => 'bg-blue-100 text-blue-800',
-                            'Validée' => 'bg-green-100 text-green-800',
-                            'Rejetée' => 'bg-red-100 text-red-800',
-                            ];
-                            $class = $statusClasses[$demande->statut] ?? 'bg-gray-100 text-gray-800';
-                            @endphp
-                            <span
-                                class="{{ $class }} py-0.5 px-2 rounded text-[10px] font-bold uppercase tracking-wide">
-                                {{ $demande->statut }}
-                            </span>
+                            <h3 class="text-2xl font-bold">{{ $contrat->logement->numero_chambre }}</h3>
+                            <p class="text-sm opacity-90">{{ $contrat->logement->batiment->nom }} - {{
+                                $contrat->logement->type_logement->nom }}</p>
                         </div>
 
-                        <div class="space-y-2 text-xs text-gray-600">
-                            <div class="flex justify-between">
-                                <span>Bâtiment :</span>
-                                <span class="font-medium text-gray-800">{{ $demande->batiment ? $demande->batiment->nom
-                                    : 'Aucun' }}</span>
-                            </div>
-                            @if($demande->logement_propose)
-                            <div class="flex justify-between pt-2 border-t border-gray-50">
-                                <span>Logement attribué :</span>
-                                <span class="font-bold text-blue-600">{{ $demande->logement_propose->numero_chambre
-                                    }}</span>
-                            </div>
-                            @endif
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="document.getElementById('incidentModal').classList.remove('hidden')"
+                                class="flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                                <i class="fas fa-tools text-orange-500 mb-1"></i>
+                                <span class="text-[10px] font-bold text-gray-700">Signaler un Pb</span>
+                            </button>
+                            <a href="#"
+                                class="flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                                <i class="fas fa-file-invoice-dollar text-green-500 mb-1"></i>
+                                <span class="text-[10px] font-bold text-gray-700">Mes Paiements</span>
+                            </a>
                         </div>
-                    </div>
-                    @else
-                    <div class="text-center py-6 text-gray-500">
-                        <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
-                        <p class="text-sm">Vous n'avez aucune demande de logement en cours.</p>
-                    </div>
-                    @endif
 
-                    @if(!$demande || in_array($demande->statut, ['Rejetée']))
-                    <a href="{{ route('demandes.create') }}"
-                        class="block text-center w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
-                        Faire une demande
-                    </a>
-                    @else
-                    <button disabled
-                        class="w-full bg-gray-100 text-gray-400 py-2 rounded-lg font-semibold cursor-not-allowed mt-2">
-                        Demande en cours
-                    </button>
+                        @if($incidents->count() > 0)
+                        <div class="mt-4">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Incidents récents</h4>
+                            <div class="space-y-2">
+                                @foreach($incidents as $incident)
+                                <div
+                                    class="text-[10px] p-2 bg-white border border-gray-100 rounded flex justify-between items-center">
+                                    <span class="text-gray-700">{{ $incident->type }} : {{
+                                        Str::limit($incident->description, 20) }}</span>
+                                    <span
+                                        class="px-1.5 py-0.5 rounded-full font-bold {{ $incident->statut === 'Résolu' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700' }}">
+                                        {{ $incident->statut }}
+                                    </span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    @elseif($contrat && $activationProgress)
+                    <!-- FUTURE RESIDENT / PENDING ACTIVATION -->
+                    <div class="bg-white p-5 rounded-xl border border-blue-100 shadow-sm">
+                        <h4 class="font-bold text-blue-900 text-sm mb-3">Activation de votre logement</h4>
+
+                        <div class="mb-4">
+                            <div class="flex justify-between text-[10px] font-bold text-gray-500 mb-1">
+                                <span>Progression</span>
+                                <span>{{ $activationProgress['percentage'] }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
+                                    style="width: {{ $activationProgress['percentage'] }}%"></div>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-2 text-[10px]">
+                            @foreach($activationProgress['steps'] as $key => $step)
+                            <li class="flex items-center gap-2">
+                                <i
+                                    class="fas {{ $step['done'] ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200' }}"></i>
+                                <span class="{{ $step['done'] ? 'text-gray-700 font-medium' : 'text-gray-400' }}">{{
+                                    $step['label'] }}</span>
+                                @if($key === 'payments' && !$step['done'])
+                                <span class="ml-auto bg-gray-100 px-1.5 rounded font-bold">{{ $step['count'] }}/{{
+                                    $step['required'] }}</span>
+                                @endif
+                            </li>
+                            @endforeach
+                        </ul>
+
+                        @if($activationProgress['percentage'] < 100) <div
+                            class="mt-4 p-2 bg-yellow-50 border border-yellow-100 rounded text-[9px] text-yellow-800">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Votre chambre sera activée dès que ces étapes seront complétées.
+                    </div>
                     @endif
                 </div>
+
+                @elseif($demande)
+                <!-- APPLICANT VIEW -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Demande du {{
+                                $demande->date_soumission->format('d/m/Y') }}</span>
+                            <h4 class="font-bold text-gray-800">{{ $demande->type_logement ?
+                                $demande->type_logement->nom : 'Type non spécifié' }}</h4>
+                        </div>
+                        @php
+                        $statusClasses = [
+                        'En attente' => 'bg-yellow-100 text-yellow-800',
+                        'En cours' => 'bg-blue-100 text-blue-800',
+                        'Validée' => 'bg-green-100 text-green-800',
+                        'Rejetée' => 'bg-red-100 text-red-800',
+                        ];
+                        $class = $statusClasses[$demande->statut] ?? 'bg-gray-100 text-gray-800';
+                        @endphp
+                        <span class="{{ $class }} py-0.5 px-2 rounded text-[10px] font-bold uppercase tracking-wide">
+                            {{ $demande->statut }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 text-xs text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Bâtiment :</span>
+                            <span class="font-medium text-gray-800">{{ $demande->batiment ? $demande->batiment->nom
+                                : 'Aucun' }}</span>
+                        </div>
+                        @if($demande->logement_propose)
+                        <div class="flex justify-between pt-2 border-t border-gray-50">
+                            <span>Logement attribué :</span>
+                            <span class="font-bold text-blue-600">{{ $demande->logement_propose->numero_chambre
+                                }}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @else
+                <div class="text-center py-6 text-gray-500">
+                    <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                    <p class="text-sm">Vous n'avez aucune demande de logement en cours.</p>
+                </div>
+                @endif
+
+                @if(!$demande || in_array($demande->statut, ['Rejetée']))
+                <a href="{{ route('demandes.create') }}"
+                    class="block text-center w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
+                    Faire une demande
+                </a>
+                @elseif($demande && $demande->statut === 'Validée' && !$contrat)
+                <div class="mt-4 p-3 bg-green-50 border border-green-100 rounded-lg text-xs text-green-800">
+                    <p class="font-bold mb-1"><i class="fas fa-calendar-check mr-1"></i> Félicitations !</p>
+                    Votre demande est validée. Un agent administratif va bientôt générer votre contrat d'habitation.
+                </div>
+                @endif
             </div>
         </div>
+        </div>
+    </main>
+
+    <!-- Incident Modal -->
+    <div id="incidentModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-900">Signaler un incident</h3>
+                <button onclick="document.getElementById('incidentModal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="{{ route('incidents.store') }}" method="POST" class="p-6 space-y-4">
+                @csrf
+                @if($contrat)
+                <input type="hidden" name="logement_id" value="{{ $contrat->logement_id }}">
+                @endif
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Type d'incident</label>
+                    <select name="type"
+                        class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        required>
+                        <option value="Panne">Panne (Electricité, Plomberie...)</option>
+                        <option value="Dégât">Dégât matériel</option>
+                        <option value="Voisinage">Voisinage (Bruit, comportement...)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                    <textarea name="description" rows="4"
+                        class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        placeholder="Décrivez le problème avec précision..." required></textarea>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
+                    Envoyer le signalement
+                </button>
+            </form>
+        </div>
+    </div>
+    </div>
+    </div>
     </main>
 
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
