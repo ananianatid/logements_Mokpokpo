@@ -65,20 +65,59 @@
                         Mon Profil
                     </h2>
                     <ul class="space-y-3 text-sm text-gray-600 mb-6">
-                        <li class="flex justify-between">
+                        <li class="flex justify-between items-center">
                             <span class="font-medium">Identifiant :</span>
-                            <span>{{ $user->email }}</span>
+                            <span class="text-gray-900">{{ $user->email }}</span>
                         </li>
-                        <li class="flex justify-between">
+                        @if($user->etudiant)
+                        <li class="flex justify-between items-center border-t border-gray-100 pt-2">
+                            <span class="font-medium">Nom complet :</span>
+                            <span class="text-gray-900">{{ $user->etudiant->nom }} {{ $user->etudiant->prenom }}</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="font-medium">Date du BAC :</span>
+                            <span class="text-gray-900">{{ $user->etudiant->date_obtention_bac ?
+                                $user->etudiant->date_obtention_bac->format('d/m/Y') : 'Non renseigné' }}</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="font-medium">Mobilité/Handicap :</span>
+                            <div class="flex flex-wrap gap-1 justify-end">
+                                @forelse($user->etudiant->handicaps as $h)
+                                <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold">{{
+                                    $h->nom }}</span>
+                                @empty
+                                <span class="text-gray-400">Aucun</span>
+                                @endforelse
+                            </div>
+                        </li>
+                        @endif
+                        <li class="flex justify-between items-center border-t border-gray-100 pt-2">
                             <span class="font-medium">Statut :</span>
+                            @if($user->etudiant && $user->etudiant->profil_complet)
                             <span
-                                class="bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs font-bold">Incomplet</span>
+                                class="bg-green-100 text-green-800 py-0.5 px-3 rounded-full text-xs font-bold flex items-center gap-1">
+                                <i class="fas fa-check-circle"></i> Complet
+                            </span>
+                            @else
+                            <span
+                                class="bg-yellow-100 text-yellow-800 py-0.5 px-3 rounded-full text-xs font-bold flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> Incomplet
+                            </span>
+                            @endif
                         </li>
                     </ul>
-                    <button
-                        class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-50 transition shadow-sm">
+
+                    @if(!$user->etudiant || !$user->etudiant->profil_complet)
+                    <a href="{{ route('profile.complete') }}"
+                        class="block text-center w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm">
                         Compléter mon profil
-                    </button>
+                    </a>
+                    @else
+                    <a href="{{ route('profile.complete') }}"
+                        class="block text-center w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-50 transition shadow-sm">
+                        Modifier mon profil
+                    </a>
+                    @endif
                 </div>
 
                 <!-- Applications Status -->

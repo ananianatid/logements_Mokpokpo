@@ -59,4 +59,29 @@ class User extends Authenticatable implements FilamentUser, HasName
             'password' => 'hashed',
         ];
     }
+
+    public function etudiant()
+    {
+        return $this->hasOne(Etudiant::class);
+    }
+
+    public function administratif()
+    {
+        return $this->hasOne(Administratif::class);
+    }
+
+    public function comptable()
+    {
+        return $this->hasOne(Comptable::class);
+    }
+
+    public function concierge()
+    {
+        return $this->hasOne(Concierge::class);
+    }
+
+    public function technicien()
+    {
+        return $this->hasOne(Technicien::class);
+    }
 }

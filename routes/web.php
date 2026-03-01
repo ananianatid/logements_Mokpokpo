@@ -10,6 +10,9 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
+
+    Route::get('/profile/complete', [\App\Http\Controllers\ProfileController::class , 'edit'])->name('profile.complete');
+    Route::post('/profile/complete', [\App\Http\Controllers\ProfileController::class , 'update'])->name('profile.update');
 });
 
 Route::post('/login', [AuthController::class , 'login'])->name('login.post');
