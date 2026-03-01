@@ -73,13 +73,13 @@ class ContratHabitation extends Model
         }
 
         // 2. État des lieux (Entrée) signé
-        $edlEntree = $this->etatsDesLieux()->where('type', 'Entrée')->where('signe_etudiant', true)->where('signe_concierge', true)->exists();
+        $edlEntree = $this->etatsDesLieux()->where('type', '=', 'Entrée')->where('signe_etudiant', '=', true)->where('signe_concierge', '=', true)->exists();
         if (!$edlEntree) {
             return false;
         }
 
         // 3. Paiements (3 premiers mois)
-        $pagementsPayes = $this->paiements()->where('statut', 'Payé')->count();
+        $pagementsPayes = $this->paiements()->where('statut', '=', 'Payé')->count();
         return $pagementsPayes >= 3;
     }
 }

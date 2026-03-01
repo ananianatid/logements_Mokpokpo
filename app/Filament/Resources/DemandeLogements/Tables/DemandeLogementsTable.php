@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\DemandeLogements\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 
@@ -19,7 +19,7 @@ class DemandeLogementsTable
             ->columns([
                 TextColumn::make('etudiant.nom')
                     ->label('Étudiant')
-                    ->formatStateUsing(function ($record) {
+                    ->formatStateUsing(function ($record): string {
                         return $record->etudiant ? "{$record->etudiant->nom} {$record->etudiant->prenom}" : 'Inconnu';
                     })
                     ->searchable()
@@ -35,12 +35,14 @@ class DemandeLogementsTable
 
                 TextColumn::make('statut')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'En attente' => 'warning',
-                        'En cours' => 'info',
-                        'Validée' => 'success',
-                        'Rejetée' => 'danger',
-                        default => 'gray',
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'En attente' => 'warning',
+                            'En cours' => 'info',
+                            'Validée' => 'success',
+                            'Rejetée' => 'danger',
+                            default => 'gray',
+                        };
                     })
                     ->searchable(),
 
@@ -69,16 +71,50 @@ class DemandeLogementsTable
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Tables\Actions\Action::make('generer_contrat')
-                    ->label('Générer Contrat')
-                    ->icon('heroicon-o-document-plus')
+                Action::make('approuver')
+                    ->label('Approuver & Créer Contrat')
+                    ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->hidden(fn ($record) => $record->statut !== 'Validée' || $record->contrat()->exists())
+                    ->hidden(fn ($record) => $record->statut !== 'En attente' && $record->statut !== 'En cours')
+                    ->requiresConfirmation()
+                    ->form([
+                        \Filament\Forms\Components\Select::make('logement_propose_id')
+                            ->label('Logement à attribuer')
+                            ->relationship('logement_propose', 'numero_chambre')
+                            ->searchable()
+                            ->required()
+                            ->default(fn ($record) => $record->logement_propose_id),
+                        \Filament\Forms\Components\DatePicker::make('date_debut')
+                            ->label('Date de début (Auto: +1 semaine)')
+                            ->default(now()->addWeek())
+                            ->required(),
+                        \Filament\Forms\Components\DatePicker::make('date_fin')
+                            ->label('Date de fin (Auto: +3 mois)')
+                            ->default(now()->addWeek()->addMonths(3))
+                            ->required(),
+                    ])
                     ->action(function ($record, array $data) {
-                        $contrat = \App\Models\ContratHabitation::create([
+                        $administratif = auth()->user()->administratif;
+
+                        if (!$administratif) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Erreur : Profil administratif non trouvé')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        // 1. Update the request
+                        $record->update([
+                            'statut' => 'Validée',
+                            'logement_propose_id' => $data['logement_propose_id'],
+                        ]);
+
+                        // 2. Create the contract
+                        \App\Models\ContratHabitation::create([
                             'etudiant_id' => $record->etudiant_id,
-                            'logement_id' => $record->logement_propose_id,
-                            'administratif_id' => auth()->id(), // Assuming the agent is logged in
+                            'logement_id' => $data['logement_propose_id'],
+                            'administratif_id' => $administratif->id,
                             'demande_logement_id' => $record->id,
                             'date_debut' => $data['date_debut'],
                             'date_fin' => $data['date_fin'],
@@ -86,20 +122,10 @@ class DemandeLogementsTable
                         ]);
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Contrat généré avec succès')
+                            ->title('Demande approuvée et contrat généré')
                             ->success()
                             ->send();
-                    })
-                    ->form([
-                        \Filament\Forms\Components\DatePicker::make('date_debut')
-                            ->label('Date de début')
-                            ->default(now())
-                            ->required(),
-                        \Filament\Forms\Components\DatePicker::make('date_fin')
-                            ->label('Date de fin')
-                            ->default(now()->addYear())
-                            ->required(),
-                    ]),
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
