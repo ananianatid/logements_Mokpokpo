@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Mokpokpo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/dist/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="fas fa-university text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900 tracking-tight">Espace Étudiant</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-gray-700 font-medium">{{ $user->email }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-100 transition text-sm">
+                                Déconnexion
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        @if(session('success'))
+        <div
+            class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-500"></i>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+        @endif
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+            <div class="p-6 sm:p-8 bg-blue-600 text-white">
+                <h1 class="text-3xl font-bold mb-2">Bienvenue dans votre espace !</h1>
+                <p class="text-blue-100">Gérez vos demandes de logement et suivez l'évolution de votre dossier.</p>
+            </div>
+
+            <div class="p-6 sm:p-8 grid md:grid-cols-2 gap-8">
+                <!-- Profile Status -->
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-user-circle text-blue-500"></i>
+                        Mon Profil
+                    </h2>
+                    <ul class="space-y-3 text-sm text-gray-600 mb-6">
+                        <li class="flex justify-between">
+                            <span class="font-medium">Identifiant :</span>
+                            <span>{{ $user->email }}</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="font-medium">Statut :</span>
+                            <span
+                                class="bg-yellow-100 text-yellow-800 py-0.5 px-2 rounded-full text-xs font-bold">Incomplet</span>
+                        </li>
+                    </ul>
+                    <button
+                        class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-50 transition shadow-sm">
+                        Compléter mon profil
+                    </button>
+                </div>
+
+                <!-- Applications Status -->
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fas fa-home text-blue-500"></i>
+                        Mes Demandes
+                    </h2>
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                        <p>Vous n'avez aucune demande de logement en cours.</p>
+                    </div>
+                    <button
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
+                        Nouvelle demande
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+            <p>&copy; 2026 Mokpokpo Université. Tableau de bord étudiant.</p>
+        </div>
+    </footer>
+</body>
+
+</html>
