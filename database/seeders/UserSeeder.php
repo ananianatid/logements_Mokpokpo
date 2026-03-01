@@ -25,12 +25,20 @@ class UserSeeder extends Seeder
         $faker = Faker::create('fr_FR');
         $password = Hash::make('password'); // Default password for all
 
-        // 1. Create a Batiment for Concierge
-        $batiment = Batiment::create([
-            'nom' => 'Bâtiment A',
-            'adresse' => $faker->address,
-            'nombre_etages' => 4,
-        ]);
+        // 1. Create Batiments with names of great African academics
+        $batimentsData = [
+            ['nom' => 'Bâtiment Wole Soyinka', 'adresse' => 'Zone Littéraire, Campus Mokpokpo', 'nombre_etages' => 4],
+            ['nom' => 'Bâtiment Cheikh Anta Diop', 'adresse' => 'Zone Scientifique, Campus Mokpokpo', 'nombre_etages' => 5],
+            ['nom' => 'Bâtiment Samir Amin', 'adresse' => 'Zone Économique, Campus Mokpokpo', 'nombre_etages' => 3],
+        ];
+
+        $batiments = collect();
+        foreach ($batimentsData as $data) {
+            $batiments->push(Batiment::create($data));
+        }
+
+        // Pick a random batiment for the Concierge
+        $batimentForConcierge = $batiments->random();
 
         // Helper to formatting email: removed accents, spaces etc.
         $formatEmail = function ($nom, $prenom) {
@@ -106,23 +114,33 @@ class UserSeeder extends Seeder
             'telephone' => $faker->phoneNumber,
         ]);
 
-        // 5. 1 Concierge
-        $nomConc = $faker->lastName;
-        $prenomConc = $faker->firstName;
-        $userConc = User::create([
-            'email' => $formatEmail($nomConc, $prenomConc),
-            'password' => $password,
-            'role' => 'Concierge',
-            'is_active' => true,
-        ]);
-        Concierge::create([
-            'user_id' => $userConc->id,
-            'nom' => $nomConc,
-            'prenom' => $prenomConc,
-            'matricule' => 'CNC-' . $faker->unique()->numerify('####'),
-            'telephone' => $faker->phoneNumber,
-            'batiment_id' => $batiment->id,
-        ]);
+        // 5. 3 Concierges (1 per Batiment)
+        $conciergeCounter = 1;
+        foreach ($batiments as $batiment) {
+            $nomConc = $faker->lastName;
+            $prenomConc = $faker->firstName;
+
+            $emailConc = $formatEmail($nomConc, $prenomConc);
+            while (User::where('email', $emailConc)->exists()) {
+                $emailConc = $formatEmail($nomConc, $prenomConc . $conciergeCounter);
+                $conciergeCounter++;
+            }
+
+            $userConc = User::create([
+                'email' => $emailConc,
+                'password' => $password,
+                'role' => 'Concierge',
+                'is_active' => true,
+            ]);
+            Concierge::create([
+                'user_id' => $userConc->id,
+                'nom' => $nomConc,
+                'prenom' => $prenomConc,
+                'matricule' => 'CNC-' . $faker->unique()->numerify('####'),
+                'telephone' => $faker->phoneNumber,
+                'batiment_id' => $batiment->id,
+            ]);
+        }
 
         // 6. 1 Technicien
         $nomTech = $faker->lastName;
