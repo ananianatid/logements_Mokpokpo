@@ -316,56 +316,58 @@
                 </button>
             </form>
         </div>
-        <!-- Payment History Modal -->
-        <div id="paymentModal"
-            class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h3 class="text-xl font-bold text-gray-900">Historique des Paiements</h3>
-                    <button onclick="document.getElementById('paymentModal').classList.add('hidden')"
-                        class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="p-6 max-h-[60vh] overflow-y-auto">
-                    @if($paymentHistory && count($paymentHistory) > 0)
-                    <div class="space-y-3">
-                        @foreach($paymentHistory as $item)
-                        <div
-                            class="flex items-center justify-between p-3 rounded-xl border {{ $item['statut'] === 'En retard' ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100 shadow-sm' }}">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-gray-900">{{ $item['month'] }}</span>
-                                <span class="text-[10px] text-gray-500">Loyer mensuel : {{
-                                    number_format($item['montant'], 0, ',', ' ') }} CFA</span>
-                            </div>
-                            <div class="flex flex-col items-end">
-                                <span
-                                    class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $item['statut'] === 'En retard' ? 'bg-red-600 text-white' : ($item['statut'] === 'Payé' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700') }}">
-                                    {{ $item['statut'] }}
-                                </span>
-                                @if(isset($item['note']))
-                                <span class="text-[8px] font-bold text-gray-400 mt-0.5">{{ $item['note'] }}</span>
-                                @endif
-                            </div>
+    </div>
+
+    <!-- Payment History Modal -->
+    <div id="paymentModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-900">Historique des Paiements</h3>
+                <button onclick="document.getElementById('paymentModal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                @if($paymentHistory && count($paymentHistory) > 0)
+                <div class="space-y-3">
+                    @foreach($paymentHistory as $item)
+                    <div
+                        class="flex items-center justify-between p-3 rounded-xl border {{ $item['statut'] === 'En retard' ? 'bg-red-50 border-red-100' : 'bg-white border-gray-100 shadow-sm' }}">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-gray-900">{{ $item['month'] }}</span>
+                            <span class="text-[10px] text-gray-500">Loyer mensuel : {{
+                                number_format($item['montant'], 0, ',', ' ') }} CFA</span>
                         </div>
-                        @endforeach
+                        <div class="flex flex-col items-end">
+                            <span
+                                class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $item['statut'] === 'En retard' ? 'bg-red-600 text-white' : ($item['statut'] === 'Payé' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700') }}">
+                                {{ $item['statut'] }}
+                            </span>
+                            @if(isset($item['note']))
+                            <span class="text-[8px] font-bold text-gray-400 mt-0.5">{{ $item['note'] }}</span>
+                            @endif
+                        </div>
                     </div>
-                    @else
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-receipt text-4xl mb-3 text-gray-300"></i>
-                        <p class="text-sm">Aucun historique disponible.</p>
-                    </div>
-                    @endif
+                    @endforeach
                 </div>
-                <div class="p-4 bg-gray-50 border-t border-gray-100 text-center">
-                    <p class="text-[10px] text-gray-500">Pour tout litige, veuillez contacter le service comptable.</p>
+                @else
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-receipt text-4xl mb-3 text-gray-300"></i>
+                    <p class="text-sm">Aucun historique disponible.</p>
                 </div>
+                @endif
+            </div>
+            <div class="p-4 bg-gray-50 border-t border-gray-100 flex flex-col gap-3 items-center">
+                <button onclick="document.getElementById('paymentModal').classList.add('hidden')"
+                    class="w-full bg-blue-600 text-white py-2 rounded-xl font-bold hover:bg-blue-700 transition shadow-sm">
+                    Fermer
+                </button>
+                <p class="text-[10px] text-gray-500">Pour tout litige, veuillez contacter le service comptable.</p>
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </main>
 
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
