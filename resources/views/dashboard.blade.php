@@ -139,7 +139,7 @@
                                 <span class="text-xs font-bold uppercase opacity-80">Chambre</span>
                                 <span class="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-bold">Actif</span>
                             </div>
-                            <h3 class="text-2xl font-bold">{{ $contrat->logement->numero_chambre }}</h3>
+                            <h3 class="text-2xl font-bold">{{ $contrat->logement->nomenclature }}</h3>
                             <p class="text-sm opacity-90">{{ $contrat->logement->batiment->nom }} - {{
                                 $contrat->logement->type_logement->nom }}</p>
                         </div>
@@ -249,7 +249,7 @@
                         @if($demande->logement_propose)
                         <div class="flex justify-between pt-2 border-t border-gray-50">
                             <span>Logement attribué :</span>
-                            <span class="font-bold text-blue-600">{{ $demande->logement_propose->numero_chambre
+                            <span class="font-bold text-blue-600">{{ $demande->logement_propose->nomenclature
                                 }}</span>
                         </div>
                         @endif

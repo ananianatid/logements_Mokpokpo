@@ -30,7 +30,7 @@ class ContratHabitationsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('logement.numero_chambre')
+                TextColumn::make('logement.nomenclature')
                     ->label('Logement')
                     ->sortable(),
 
@@ -91,6 +91,10 @@ class ContratHabitationsTable
                                 return Concierge::all()->mapWithKeys(function ($concierge) {
                                     return [$concierge->id => "{$concierge->nom} {$concierge->prenom}"];
                                 })->toArray();
+                            })
+                            ->default(function ($record) {
+                                // Auto-select the concierge of the building
+                                return Concierge::where('batiment_id', $record->logement->batiment_id)->first()?->id;
                             })
                             ->searchable()
                             ->required(),

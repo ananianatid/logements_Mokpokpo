@@ -51,7 +51,7 @@ class DemandeLogementsTable
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('logement_propose.numero_chambre')
+                TextColumn::make('logement_propose.nomenclature')
                     ->label('Logement Attribué')
                     ->placeholder('Non assigné')
                     ->sortable(),
@@ -80,7 +80,7 @@ class DemandeLogementsTable
                     ->form([
                         \Filament\Forms\Components\Select::make('logement_propose_id')
                             ->label('Logement à attribuer')
-                            ->relationship('logement_propose', 'numero_chambre')
+                            ->options(\App\Models\Logement::all()->pluck('nom_complet', 'id')->toArray())
                             ->searchable()
                             ->required()
                             ->default(fn ($record) => $record->logement_propose_id),

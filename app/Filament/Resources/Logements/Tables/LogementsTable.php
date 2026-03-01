@@ -14,17 +14,30 @@ class LogementsTable
     {
         return $table
             ->columns([
-                TextColumn::make('numero_chambre')
-                    ->searchable(),
-                TextColumn::make('batiment_id')
-                    ->numeric()
+                TextColumn::make('nomenclature')
+                    ->label('Chambre')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('type_logement_id')
-                    ->numeric()
+                TextColumn::make('batiment.nom')
+                    ->label('Bâtiment')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('type_logement.nom')
+                    ->label('Type')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('statut')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Disponible' => 'success',
+                        'Réservé' => 'warning',
+                        'Occupé' => 'info',
+                        'En maintenance' => 'danger',
+                        default => 'gray',
+                    })
                     ->searchable(),
                 TextColumn::make('etage')
+                    ->label('Étage')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
