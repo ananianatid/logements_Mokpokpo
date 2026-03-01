@@ -77,7 +77,23 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // 3. 1 Administratif
+        // 3. 1 Fixed Administratif for easy access
+        $userAdmin = User::create([
+            'email' => 'admin@mokpokpo.tg',
+            'password' => $password,
+            'role' => 'Administratif',
+            'is_active' => true,
+        ]);
+        Administratif::create([
+            'user_id' => $userAdmin->id,
+            'nom' => 'ADMIN',
+            'prenom' => 'Principal',
+            'matricule' => 'ADM-0001',
+            'bureau' => 'Bureau Direction',
+            'telephone' => '+228 90 00 00 01',
+        ]);
+
+        // 4. Random Administratif
         $nomAdmin = $faker->lastName;
         $prenomAdmin = $faker->firstName;
         $emailAdmin = $formatEmail($nomAdmin, $prenomAdmin);
