@@ -13,6 +13,8 @@ return new class extends Migration {
         Schema::create('demande_logements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('etudiant_id')->constrained('etudiants')->onDelete('cascade');
+            $table->foreignId('batiment_id')->nullable()->constrained('batiments')->onDelete('set null');
+            $table->foreignId('type_logement_id')->nullable()->constrained('type_logements')->onDelete('set null');
             $table->timestamp('date_soumission')->useCurrent();
             $table->enum('statut', ['En attente', 'En cours', 'Validée', 'Rejetée'])->default('En attente');
             $table->integer('priorite')->default(0);

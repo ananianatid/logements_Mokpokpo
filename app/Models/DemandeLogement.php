@@ -6,7 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class DemandeLogement extends Model
 {
-    protected $fillable = ['etudiant_id', 'date_soumission', 'statut', 'priorite', 'administratif_id', 'logement_propose_id', 'note_traitement', 'date_traitement'];
+    protected $fillable = [
+        'etudiant_id',
+        'batiment_id',
+        'type_logement_id',
+        'date_soumission',
+        'statut',
+        'priorite',
+        'administratif_id',
+        'logement_propose_id',
+        'note_traitement',
+        'date_traitement'
+    ];
 
     protected $casts = [
         'date_soumission' => 'datetime',
@@ -16,6 +27,16 @@ class DemandeLogement extends Model
     public function etudiant()
     {
         return $this->belongsTo(Etudiant::class);
+    }
+
+    public function batiment()
+    {
+        return $this->belongsTo(Batiment::class);
+    }
+
+    public function type_logement()
+    {
+        return $this->belongsTo(TypeLogement::class);
     }
 
     public function administratif()

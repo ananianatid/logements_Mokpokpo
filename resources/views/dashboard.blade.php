@@ -126,14 +126,68 @@
                         <i class="fas fa-home text-blue-500"></i>
                         Mes Demandes
                     </h2>
+
+                    @php
+                    $demande = $user->etudiant ? $user->etudiant->demandeLogements()->latest()->first() : null;
+                    @endphp
+
+                    @if($demande)
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 mb-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Demande du {{
+                                    $demande->date_soumission->format('d/m/Y') }}</span>
+                                <h4 class="font-bold text-gray-800">{{ $demande->type_logement ?
+                                    $demande->type_logement->nom : 'Type non spécifié' }}</h4>
+                            </div>
+                            @php
+                            $statusClasses = [
+                            'En attente' => 'bg-yellow-100 text-yellow-800',
+                            'En cours' => 'bg-blue-100 text-blue-800',
+                            'Validée' => 'bg-green-100 text-green-800',
+                            'Rejetée' => 'bg-red-100 text-red-800',
+                            ];
+                            $class = $statusClasses[$demande->statut] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <span
+                                class="{{ $class }} py-0.5 px-2 rounded text-[10px] font-bold uppercase tracking-wide">
+                                {{ $demande->statut }}
+                            </span>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-gray-600">
+                            <div class="flex justify-between">
+                                <span>Bâtiment :</span>
+                                <span class="font-medium text-gray-800">{{ $demande->batiment ? $demande->batiment->nom
+                                    : 'Aucun' }}</span>
+                            </div>
+                            @if($demande->logement_propose)
+                            <div class="flex justify-between pt-2 border-t border-gray-50">
+                                <span>Logement attribué :</span>
+                                <span class="font-bold text-blue-600">{{ $demande->logement_propose->numero_chambre
+                                    }}</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @else
                     <div class="text-center py-6 text-gray-500">
                         <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
-                        <p>Vous n'avez aucune demande de logement en cours.</p>
+                        <p class="text-sm">Vous n'avez aucune demande de logement en cours.</p>
                     </div>
-                    <button
-                        class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
-                        Nouvelle demande
+                    @endif
+
+                    @if(!$demande || in_array($demande->statut, ['Rejetée']))
+                    <a href="{{ route('demandes.create') }}"
+                        class="block text-center w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
+                        Faire une demande
+                    </a>
+                    @else
+                    <button disabled
+                        class="w-full bg-gray-100 text-gray-400 py-2 rounded-lg font-semibold cursor-not-allowed mt-2">
+                        Demande en cours
                     </button>
+                    @endif
                 </div>
             </div>
         </div>

@@ -27,4 +27,9 @@ class Etudiant extends Model
     {
         return $this->belongsToMany(Handicap::class , 'etudiant_handicaps');
     }
+
+    public function demandeLogements()
+    {
+        return $this->hasMany(DemandeLogement::class);
+    }
 }
