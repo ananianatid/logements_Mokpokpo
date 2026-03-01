@@ -1,0 +1,365 @@
+// ============================================================
+//  LOGEMENTS MOKPOKPO — Schéma de base de données
+//  Version : 1.0 — Prêt pour développement
+// ============================================================
+//
+//  RÈGLES MÉTIER CLÉS
+//  ------------------
+//  [R1] PROFIL OBLIGATOIRE
+//       Un étudiant ne peut soumettre une demande de logement
+//       que si etudiants.profil_complet = true.
+//
+//  [R2] CALCUL DE PRIORITÉ (automatique à la soumission)
+//       Score = somme des points suivants :
+//         +40 si l'étudiant a au moins un handicap déclaré (etudiant_handicaps)
+//         +20 si adresse_actuelle est hors ville (détection côté backend)
+//         +10 si situation_matrimoniale = 'Marie'
+//         +5  par semaine d'attente depuis date_soumission (recalculé périodiquement)
+//         +5  si date_obtention_bac = année en cours
+//       Recalculé à chaque mise à jour du dossier étudiant.
+//
+//  [R3] FLUX D'ACTIVATION DU LOGEMENT
+//       Le comptable peut déclencher l'activation UNIQUEMENT si :
+//         (a) facture_paiement.statut = 'Payé' ET est_premier_versement = true
+//         (b) contrat_habitation.statut_signature_etudiant = true
+//             ET statut_signature_administratif = true
+//         (c) etat_des_lieux de type 'Entrée' EXISTS pour ce contrat
+//             ET signe_etudiant = true ET signe_concierge = true
+//       Quand ces 3 conditions sont réunies, le comptable appelle
+//       l'action "Activer" qui :
+//         → contrat_habitation.statut passe à 'Actif'
+//         → logements.statut passe à 'Occupé'
+//
+//  [R4] FIN DE CONTRAT
+//       À date_fin, le contrat passe automatiquement à 'Expiré'
+//       (job planifié côté backend).
+//       La chambre NE repasse PAS à 'Disponible' automatiquement.
+//       Elle passe à 'En maintenance' en attente de l'état des lieux de sortie.
+//       Flux de libération :
+//         1. Concierge crée un etat_des_lieux de type 'Sortie'
+//         2. Étudiant et concierge signent
+//         3. La chambre repasse à 'Disponible' (déclenché à la 2e signature)
+//
+//  [R5] LOYERS MENSUELS
+//       Après activation, une facture mensuelle est générée automatiquement
+//       chaque mois (est_premier_versement = false, montant = type_logement.prix).
+//       Le comptable valide chaque paiement.
+//
+//  [R6] TABLEAU DE BORD ADMIN (requêtes, pas de table dédiée)
+//       - Demandes par statut        → COUNT sur demande_logement GROUP BY statut
+//       - Taux d'occupation          → COUNT(Occupé) / COUNT(*) sur logements GROUP BY batiment_id
+//       - Paiements en attente       → COUNT sur facture_paiement WHERE statut = 'En attente'
+//       - Incidents ouverts          → COUNT sur incident WHERE statut != 'Résolu'
+//       - Chambres disponibles/type  → COUNT sur logements WHERE statut = 'Disponible' GROUP BY type_logement_id
+//
+// ============================================================
+
+// ─── Enums ───────────────────────────────────────────────────
+
+Enum sexe_enum {
+  Masculin
+  Feminin
+}
+
+Enum situation_matrimoniale_enum {
+  Celibataire
+  Marie
+  Divorce
+  Veuf
+}
+
+Enum statut_demande_enum {
+  "En attente"          // Soumise, non encore traitée
+  "En cours"            // Prise en charge par un administratif
+  Validée               // Logement assigné, contrat à générer
+  Rejetée               // Refusée avec motif
+}
+
+Enum statut_logement_enum {
+  Disponible            // Libre, assignable
+  Réservé               // Demande validée, contrat en cours de signature
+  Occupé                // Contrat actif, étudiant en place
+  "En maintenance"      // Indisponible (fin de contrat ou incident bloquant)
+}
+
+Enum statut_contrat_enum {
+  Brouillon             // Généré par l'administratif, pas encore soumis à signature
+  "En attente de signature" // Soumis, en attente des deux signatures
+  Signé                 // Les deux parties ont signé, en attente de paiement + état des lieux
+  Actif                 // Activé par le comptable (R3)
+  Résilié               // Résiliation anticipée
+  Expiré                // date_fin dépassée (R4)
+}
+
+Enum type_etat_des_lieux_enum {
+  Entrée                // Fait avant activation (R3)
+  Sortie                // Fait après expiration du contrat (R4)
+}
+
+Enum statut_paiement_enum {
+  "En attente"          // Générée, pas encore payée
+  Payé                  // Validée par le comptable
+  Rejeté                // Refusée avec motif (ex: montant incorrect)
+}
+
+Enum type_incident_enum {
+  Panne                 // Équipement défaillant
+  Dégât                 // Dommage matériel
+  Voisinage             // Nuisances sonores ou comportement
+}
+
+Enum statut_incident_enum {
+  Nouveau               // Signalé, non assigné
+  "En cours"            // Assigné à un technicien
+  Résolu                // Intervention terminée
+}
+
+Enum role_enum {
+  Etudiant
+  Administratif         // Gestionnaire : demandes, logements, contrats
+  Comptable             // Paiements et activation
+  Concierge             // État des lieux, surveillance bâtiment
+  Technicien            // Incidents techniques
+  Admin                 // Superadmin, accès total
+}
+
+Enum specialite_technicien_enum {
+  Electricité
+  Plomberie
+  Menuiserie
+  Climatisation
+  Informatique
+  Autre
+}
+
+// ─── Utilisateurs ────────────────────────────────────────────
+
+Table users {
+  id            integer     [primary key, increment]
+  email         varchar     [unique, not null]
+  password_hash varchar     [not null]
+  role          role_enum   [not null]
+  is_active     boolean     [not null, default: true]
+  created_at    timestamp   [default: `now()`]
+  updated_at    timestamp   [default: `now()`]
+
+  Note: 'Table centrale d\'authentification. Un user a exactement un profil métier selon son role.'
+}
+
+// ─── Profils agents ──────────────────────────────────────────
+
+Table administratifs {
+  id          integer   [primary key, increment]
+  user_id     integer   [not null, unique, ref: > users.id]
+  nom         varchar   [not null]
+  prenom      varchar   [not null]
+  matricule   varchar   [unique, not null]
+  bureau      varchar
+  telephone   varchar
+
+  Note: 'Valide les demandes, assigne les logements, génère et co-signe les contrats.'
+}
+
+Table comptables {
+  id            integer   [primary key, increment]
+  user_id       integer   [not null, unique, ref: > users.id]
+  nom           varchar   [not null]
+  prenom        varchar   [not null]
+  matricule     varchar   [unique, not null]
+  telephone     varchar
+  signature_url varchar   // Signature numérique apposée sur les reçus
+
+  Note: 'Valide les paiements et déclenche l\'activation du logement (R3, R5).'
+}
+
+Table concierges {
+  id          integer   [primary key, increment]
+  user_id     integer   [not null, unique, ref: > users.id]
+  nom         varchar   [not null]
+  prenom      varchar   [not null]
+  matricule   varchar   [unique, not null]
+  telephone   varchar
+  batiment_id integer   [not null, ref: > batiments.id]
+
+  Note: 'Affecté à un seul bâtiment. Réalise et co-signe les états des lieux entrée/sortie.'
+}
+
+Table techniciens {
+  id          integer                   [primary key, increment]
+  user_id     integer                   [not null, unique, ref: > users.id]
+  nom         varchar                   [not null]
+  prenom      varchar                   [not null]
+  matricule   varchar                   [unique, not null]
+  telephone   varchar
+  specialite  specialite_technicien_enum [not null]
+  disponible  boolean                   [not null, default: true]
+
+  Note: 'Reçoit et traite les tickets d\'incident selon sa spécialité.'
+}
+
+// ─── Étudiants ───────────────────────────────────────────────
+
+Table etudiants {
+  id                      integer                       [primary key, increment]
+  user_id                 integer                       [not null, unique, ref: > users.id]
+  nom                     varchar                       [not null]
+  prenom                  varchar                       [not null]
+  date_naissance          date                          [not null]
+  sexe                    sexe_enum                     [not null]
+  date_obtention_bac      date
+  adresse_actuelle        varchar
+  situation_matrimoniale  situation_matrimoniale_enum
+  profil_complet          boolean                       [not null, default: false]
+  // profil_complet = true quand tous les champs obligatoires sont renseignés.
+  // Condition nécessaire pour soumettre une demande (R1).
+
+  Note: 'profil_complet doit être true pour accéder à la création de demande (R1).'
+}
+
+Table handicaps {
+  id          integer   [primary key, increment]
+  nom         varchar   [not null, unique]
+  description text
+}
+
+Table etudiant_handicaps {
+  id          integer   [primary key, increment]
+  etudiant_id integer   [not null, ref: > etudiants.id]
+  handicap_id integer   [not null, ref: > handicaps.id]
+
+  Note: 'Relation many-to-many. Présence d\'au moins 1 ligne = +40 pts de priorité (R2).'
+}
+
+// ─── Logements ───────────────────────────────────────────────
+
+Table batiments {
+  id             integer   [primary key, increment]
+  nom            varchar   [not null]
+  adresse        varchar
+  nombre_etages  integer
+}
+
+Table type_logement {
+  id              integer   [primary key, increment]
+  nom             varchar   [not null]
+  caracteristique text
+  prix            float     [not null]
+  // prix = montant du loyer mensuel.
+  // Facture initiale = prix × 3 (R3).
+}
+
+Table logements {
+  id              integer               [primary key, increment]
+  numero_chambre  varchar               [not null]
+  batiment_id     integer               [not null, ref: > batiments.id]
+  type_logement_id integer              [not null, ref: > type_logement.id]
+  statut          statut_logement_enum  [not null, default: "Disponible"]
+  etage           integer
+
+  Note: 'Transitions de statut : Disponible→Réservé (demande validée) →Occupé (activation R3) →En maintenance (fin contrat R4) →Disponible (état des lieux sortie signé R4).'
+}
+
+// ─── Demandes de logement ────────────────────────────────────
+
+Table demande_logement {
+  id                    integer               [primary key, increment]
+  etudiant_id           integer               [not null, ref: > etudiants.id]
+  date_soumission       timestamp             [not null, default: `now()`]
+  statut                statut_demande_enum   [not null, default: "En attente"]
+  priorite              integer               [not null, default: 0]
+  // Calculé automatiquement selon R2. Recalculé à chaque mise à jour du profil.
+  administratif_id      integer               [ref: > administratifs.id]
+  // Assigné quand statut passe à 'En cours'.
+  logement_propose_id   integer               [ref: > logements.id]
+  // Renseigné quand statut = 'Validée'. Logement passe à 'Réservé'.
+  note_traitement       text
+  // Commentaire interne de l'administratif. Obligatoire si statut = 'Rejetée'.
+  date_traitement       timestamp
+
+  Note: 'Un étudiant ne peut avoir qu\'une demande active à la fois (statut != Rejetée). Vérification côté backend.'
+}
+
+// ─── Contrats ────────────────────────────────────────────────
+
+Table contrat_habitation {
+  id                            integer               [primary key, increment]
+  etudiant_id                   integer               [not null, ref: > etudiants.id]
+  logement_id                   integer               [not null, ref: > logements.id]
+  administratif_id              integer               [not null, ref: > administratifs.id]
+  date_debut                    date                  [not null]
+  date_fin                      date                  [not null]
+  statut                        statut_contrat_enum   [not null, default: "Brouillon"]
+  statut_signature_etudiant     boolean               [not null, default: false]
+  statut_signature_administratif boolean             [not null, default: false]
+  date_signature_etudiant       timestamp
+  date_signature_administratif  timestamp
+  fichier_contrat_url           varchar
+  // PDF généré à la création du contrat, mis à jour après chaque signature.
+
+  Note: 'Activation déclenchée par le comptable après vérification des 3 conditions (R3). À date_fin, job planifié passe statut à Expiré et logement à En maintenance (R4).'
+}
+
+// ─── États des lieux ─────────────────────────────────────────
+
+Table etat_des_lieux {
+  id                      integer                   [primary key, increment]
+  contrat_id              integer                   [not null, ref: > contrat_habitation.id]
+  concierge_id            integer                   [not null, ref: > concierges.id]
+  type                    type_etat_des_lieux_enum  [not null]
+  date_execution          date                      [not null]
+  remarques_generales     text
+  fichier_pdf_url         varchar
+  signe_etudiant          boolean                   [not null, default: false]
+  signe_concierge         boolean                   [not null, default: false]
+  date_signature_etudiant   timestamp
+  date_signature_concierge  timestamp
+
+  Note: 'Entrée : condition d\'activation (R3). Sortie : déclenche le retour du logement à Disponible (R4) quand les deux signatures sont présentes.'
+}
+
+// ─── Paiements ───────────────────────────────────────────────
+
+Table facture_paiement {
+  id                    integer               [primary key, increment]
+  contrat_id            integer               [not null, ref: > contrat_habitation.id]
+  mois_concerne         date                  [not null]
+  // Format YYYY-MM-01. Premier jour du mois facturé.
+  montant               float                 [not null]
+  // Si est_premier_versement = true : montant doit = type_logement.prix × 3. Vérifié par le comptable.
+  // Si est_premier_versement = false : montant doit = type_logement.prix.
+  est_premier_versement boolean               [not null, default: false]
+  // true = versement initial 3 mois (R3). false = loyer mensuel courant (R5).
+  statut                statut_paiement_enum  [not null, default: "En attente"]
+  date_soumission       timestamp             [not null, default: `now()`]
+  date_validation       timestamp
+  comptable_id          integer               [ref: > comptables.id]
+  recu_url              varchar
+  // Généré automatiquement après validation (statut → Payé).
+  note_rejet            text
+  // Obligatoire si statut = 'Rejeté'.
+
+  Note: 'Quand est_premier_versement=true ET statut passe à Payé, le comptable peut déclencher l\'activation si les 2 autres conditions de R3 sont remplies.'
+}
+
+// ─── Incidents ───────────────────────────────────────────────
+
+Table incident {
+  id                    integer               [primary key, increment]
+  logement_id           integer               [not null, ref: > logements.id]
+  signale_par_id        integer               [not null, ref: > etudiants.id]
+  type                  type_incident_enum    [not null]
+  description           text                  [not null]
+  statut                statut_incident_enum  [not null, default: "Nouveau"]
+  date_signalement      timestamp             [not null, default: `now()`]
+  technicien_id         integer               [ref: > techniciens.id]
+  // Assigné manuellement par l'administratif ou auto selon spécialité.
+  date_prise_en_charge  timestamp
+  // Renseigné quand statut passe à 'En cours'. techniciens.disponible → false.
+  date_resolution       timestamp
+  // Renseigné quand statut passe à 'Résolu'. techniciens.disponible → true.
+  rapport_intervention  text
+  // Compte-rendu obligatoire du technicien à la résolution.
+  // Si type = 'Voisinage' : technicien_id peut rester null, géré par le concierge.
+
+  Note: 'Si un incident de type Dégât ou Panne est critique, l\'administratif peut passer logements.statut à En maintenance manuellement.'
+}
