@@ -25,17 +25,25 @@ class DashboardController extends Controller
         $contrat = $etudiant->contrats()->latest()->first();
 
         $activationProgress = null;
-        if ($contrat && $contrat->statut !== 'Actif') {
+        $incidents = collect(); // Initialize incidents
+        $paymentHistory = null; // Initialize paymentHistory
+
+        if ($contrat) {
             // Try to activate if conditions are met
+            // The instruction replaces the previous activation logic with a new one
             $activationService->tryActivate($contrat);
             // Refresh contract status
             $contrat->refresh();
             // Get progress for UI
             $activationProgress = $activationService->getActivationProgress($contrat);
+            // Get recent incidents
+            if ($contrat->logement) {
+                $incidents = $contrat->logement->incidents()->latest()->limit(3)->get();
+            }
+            // Get payment history
+            $paymentHistory = $contrat->getPaiementsStatus();
         }
 
-        // 3. Get recent incidents if active
-        $incidents = $contrat && $contrat->logement ? $contrat->logement->incidents()->latest()->take(5)->get() : collect();
 
         return view('dashboard', [
             'user' => $user,
@@ -44,6 +52,7 @@ class DashboardController extends Controller
             'contrat' => $contrat,
             'activationProgress' => $activationProgress,
             'incidents' => $incidents,
+            'paymentHistory' => $paymentHistory,
         ]);
     }
 }

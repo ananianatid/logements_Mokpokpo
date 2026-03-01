@@ -65,6 +65,68 @@ class ContratHabitation extends Model
         return $this->statut === 'Actif';
     }
 
+    public function getPaiementsStatus(): array
+    {
+        $startDate = $this->date_debut->copy()->startOfMonth();
+        $currentDate = now()->startOfMonth();
+        $statuses = [];
+
+        $paiements = $this->paiements()->get();
+        $hasPremierVersement = $paiements->where('est_premier_versement', true)->where('statut', 'Payé')->isNotEmpty();
+
+        $month = $startDate->copy();
+        $monthIndex = 0;
+
+        while ($month <= $currentDate) {
+            $monthKey = $month->format('Y-m');
+            $label = ucfirst($month->translatedFormat('F Y'));
+            
+            // Check if covered by premier versement (months 0, 1, 2)
+            if ($hasPremierVersement && $monthIndex < 3) {
+                $status = [
+                    'month' => $label,
+                    'statut' => 'Payé',
+                    'badge' => 'success',
+                    'note' => 'Initial',
+                    'montant' => $this->logement->type_logement->prix ?? 0,
+                ];
+            } else {
+                // Look for a specific payment for this month
+                $paiement = $paiements->filter(function ($p) use ($month) {
+                    return $p->mois_concerne && $p->mois_concerne->format('Y-m') === $month->format('Y-m') && !$p->est_premier_versement;
+                })->first();
+
+                if ($paiement) {
+                    $status = [
+                        'month' => $label,
+                        'statut' => $paiement->statut,
+                        'badge' => match($paiement->statut) {
+                            'Payé' => 'success',
+                            'En attente' => 'warning',
+                            'Rejeté' => 'danger',
+                            default => 'gray'
+                        },
+                        'montant' => $paiement->montant,
+                    ];
+                } else {
+                    // No payment found for this month
+                    $status = [
+                        'month' => $label,
+                        'statut' => 'En retard',
+                        'badge' => 'danger',
+                        'montant' => $this->logement->type_logement->prix ?? 0,
+                    ];
+                }
+            }
+
+            $statuses[] = $status;
+            $month->addMonth();
+            $monthIndex++;
+        }
+
+        return array_reverse($statuses); // Latest first
+    }
+
     public function canBeActivated(): bool
     {
         // 1. Signatures
