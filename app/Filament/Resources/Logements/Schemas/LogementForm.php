@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Logements\Schemas;
 
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
 
 class LogementForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->components([

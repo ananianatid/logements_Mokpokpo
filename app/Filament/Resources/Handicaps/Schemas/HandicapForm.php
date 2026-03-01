@@ -8,7 +8,7 @@ use Filament\Schemas\Schema;
 
 class HandicapForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->components([

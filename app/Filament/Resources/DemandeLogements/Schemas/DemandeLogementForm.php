@@ -3,12 +3,16 @@
 namespace App\Filament\Resources\DemandeLogements\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use App\Models\Logement;
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 
 class DemandeLogementForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->components([

@@ -9,7 +9,7 @@ use Filament\Schemas\Schema;
 
 class EtudiantForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(\Filament\Schemas\Schema $schema): \Filament\Schemas\Schema
     {
         return $schema
             ->components([
