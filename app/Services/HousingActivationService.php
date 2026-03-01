@@ -43,19 +43,27 @@ class HousingActivationService
                 'label' => 'Signatures du contrat',
                 'done' => $contrat->statut_signature_etudiant && $contrat->statut_signature_administratif,
             ],
-                'inspection' => [
-                    'label' => 'État des lieux d\'entrée',
-                    'done' => $contrat->etatsDesLieux()->where('type', '=', 'Entrée')->where('signe_etudiant', '=', true)->where('signe_concierge', '=', true)->exists(),
-                ],
-                'payments' => [
-                    'label' => '3 premiers mois payés',
-                    'count' => $contrat->paiements()->where('statut', '=', 'Payé')->count(),
-                    'required' => 3,
-                    'done' => $contrat->paiements()->where('statut', '=', 'Payé')->count() >= 3,
-                ],
+            'inspection' => [
+                'label' => 'État des lieux d\'entrée',
+                'done' => $contrat->etatsDesLieux()
+                ->where(function ($query) {
+            $query->where('type', '=', 'Entrée')
+                    ->where('signe_etudiant', '=', true)
+                    ->where('signe_concierge', '=', true);
+        })
+                ->exists(),
+            ],
+            'payments' => [
+                'label' => '3 premiers mois payés',
+                'count' => $this->getEffectivePaymentCount($contrat),
+                'required' => 3,
+                'done' => $this->getEffectivePaymentCount($contrat) >= 3,
+            ],
         ];
 
-        $doneCount = collect($steps)->filter(fn($step) => $step['done'])->count();
+        $doneCount = collect($steps)->filter(function ($step) {
+            return $step['done'];
+        })->count();
         $totalSteps = count($steps);
 
         return [
@@ -63,5 +71,29 @@ class HousingActivationService
             'percentage' => round(($doneCount / $totalSteps) * 100),
             'is_ready' => $doneCount === $totalSteps,
         ];
+    }
+}
+    private function getEffectivePaymentCount(ContratHabitation $contrat): int
+    {
+        $hasDownPayment = $contrat->paiements()
+            $query->where('statut', '=', 'Payé')
+        ->where('est_premier_versement', '=', true)
+            ->exists();
+
+        }
+
+        return $contrat->paiements()
+            ->where('statut', '=', 'Payé')
+            ->count();
+    }
+}       if ($hasDownPayment) {
+            return 3;
+        }
+
+        return $contrat->paiements()
+            ->where(function ($query) {
+            $query->where('statut', '=', 'Payé');
+        })
+            ->count();
     }
 }
