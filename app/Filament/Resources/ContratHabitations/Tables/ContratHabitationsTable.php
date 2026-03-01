@@ -8,6 +8,13 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Notifications\Notification;
+use App\Models\Concierge;
+use App\Models\EtatDesLieux;
+use App\Models\FacturePaiement;
 
 class ContratHabitationsTable
 {
@@ -16,8 +23,10 @@ class ContratHabitationsTable
         return $table
             ->columns([
                 TextColumn::make('etudiant.nom')
-                    ->label('Étudiant')
-                    ->formatStateUsing(fn ($record) => "{$record->etudiant->nom} {$record->etudiant->prenom}")
+                    ->label('État de l\'étudiant')
+                    ->formatStateUsing(function ($record): string {
+                        return "{$record->etudiant->nom} {$record->etudiant->prenom}";
+                    })
                     ->searchable()
                     ->sortable(),
 
@@ -37,14 +46,16 @@ class ContratHabitationsTable
 
                 TextColumn::make('statut')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Brouillon' => 'gray',
-                        'En attente de signature' => 'warning',
-                        'Signé' => 'info',
-                        'Actif' => 'success',
-                        'Résilié' => 'danger',
-                        'Expiré' => 'danger',
-                        default => 'gray',
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'Brouillon' => 'gray',
+                            'En attente de signature' => 'warning',
+                            'Signé' => 'info',
+                            'Actif' => 'success',
+                            'Résilié' => 'danger',
+                            'Expiré' => 'danger',
+                            default => 'gray',
+                        };
                     })
                     ->searchable(),
 
@@ -66,6 +77,58 @@ class ContratHabitationsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('initierInstallation')
+                    ->label('Initier Installation')
+                    ->icon('heroicon-o-home-modern')
+                    ->color('info')
+                    ->hidden(function ($record): bool {
+                        return $record->etatsDesLieux()->where('type', '=', 'Entrée')->exists();
+                    })
+                    ->form([
+                        Select::make('concierge_id')
+                            ->label('Concierge responsable')
+                            ->options(function (): array {
+                                return Concierge::all()->mapWithKeys(function ($concierge) {
+                                    return [$concierge->id => "{$concierge->nom} {$concierge->prenom}"];
+                                })->toArray();
+                            })
+                            ->searchable()
+                            ->required(),
+                        DatePicker::make('date_installation')
+                            ->label('Date d\'installation prévue')
+                            ->default(function ($record) {
+                                return $record->date_debut;
+                            })
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data): void {
+                        // 1. Create Etat des lieux (Entrée)
+                        EtatDesLieux::create([
+                            'contrat_id' => $record->id,
+                            'concierge_id' => $data['concierge_id'],
+                            'type' => 'Entrée',
+                            'date_etat_des_lieux' => $data['date_installation'],
+                            'signe_etudiant' => false,
+                            'signe_concierge' => false,
+                        ]);
+
+                        // 2. Create Premier versement (3 months)
+                        $monthlyPrice = $record->logement->type_logement->prix ?? 0;
+                        FacturePaiement::create([
+                            'contrat_id' => $record->id,
+                            'mois_concerne' => $data['date_installation'],
+                            'montant' => $monthlyPrice * 3, // Initial payment for 3 months
+                            'est_premier_versement' => true,
+                            'statut' => 'En attente',
+                            'date_soumission' => now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Installation initiée')
+                            ->body('L\'état des lieux d\'entrée et la facture initiale ont été générés.')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
