@@ -17,4 +17,9 @@ class Logement extends Model
     {
         return $this->belongsTo(TypeLogement::class);
     }
+
+    public function incidents()
+    {
+        return $this->hasMany(Incident::class);
+    }
 }
