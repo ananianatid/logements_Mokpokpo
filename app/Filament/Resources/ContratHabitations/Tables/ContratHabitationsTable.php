@@ -107,7 +107,7 @@ class ContratHabitationsTable
                             'contrat_id' => $record->id,
                             'concierge_id' => $data['concierge_id'],
                             'type' => 'Entrée',
-                            'date_etat_des_lieux' => $data['date_installation'],
+                            'date_execution' => $data['date_installation'],
                             'signe_etudiant' => false,
                             'signe_concierge' => false,
                         ]);
