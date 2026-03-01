@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\NewStudentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,7 +25,3 @@ Route::middleware('auth')->group(function () {
 Route::post('/login', [AuthController::class , 'login'])->name('login.post');
 Route::post('/register', [AuthController::class , 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class , 'logout'])->name('logout');
-
-// Page de création de compte étudiant automatique
-Route::get('/new-student', [NewStudentController::class , 'show'])->name('new-student.show');
-Route::post('/new-student', [NewStudentController::class , 'store'])->name('new-student.store');
