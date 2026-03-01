@@ -17,7 +17,32 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role === 'Administratif' && $this->is_active;
+        return $this->isStaff() && $this->is_active;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Administratif';
+    }
+
+    public function isComptable(): bool
+    {
+        return $this->role === 'Comptable';
+    }
+
+    public function isConcierge(): bool
+    {
+        return $this->role === 'Concierge';
+    }
+
+    public function isTechnicien(): bool
+    {
+        return $this->role === 'Technicien';
+    }
+
+    public function isStaff(): bool
+    {
+        return in_array($this->role, ['Administratif', 'Comptable', 'Concierge', 'Technicien']);
     }
 
     public function getFilamentName(): string
