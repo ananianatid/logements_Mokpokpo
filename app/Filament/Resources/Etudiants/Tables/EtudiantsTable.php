@@ -30,6 +30,9 @@ class EtudiantsTable
                 TextColumn::make('date_obtention_bac')
                     ->date()
                     ->sortable(),
+                TextColumn::make('moyenne_bac')
+                    ->sortable()
+                    ->label('Moyenne Bac'),
                 TextColumn::make('adresse_actuelle')
                     ->searchable(),
                 TextColumn::make('situation_matrimoniale')

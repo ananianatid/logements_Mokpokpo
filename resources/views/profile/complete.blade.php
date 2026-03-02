@@ -123,16 +123,28 @@
                         </div>
                     </div>
 
-                    <!-- Date d'obtention du BAC -->
-                    <div>
-                        <label for="date_obtention_bac" class="block text-sm font-semibold text-gray-700 mb-2">Année /
-                            Date d'obtention du BAC</label>
-                        <input type="date" name="date_obtention_bac" id="date_obtention_bac"
-                            value="{{ old('date_obtention_bac', $etudiant->date_obtention_bac ? $etudiant->date_obtention_bac->format('Y-m-d') : '') }}"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
-                        <p class="text-xs text-gray-500 mt-1">Facultatif, mais recommandé pour l'évaluation de votre
-                            dossier.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Date d'obtention du BAC -->
+                        <div>
+                            <label for="date_obtention_bac" class="block text-sm font-semibold text-gray-700 mb-2">Année
+                                /
+                                Date d'obtention du BAC</label>
+                            <input type="date" name="date_obtention_bac" id="date_obtention_bac"
+                                value="{{ old('date_obtention_bac', $etudiant->date_obtention_bac ? $etudiant->date_obtention_bac->format('Y-m-d') : '') }}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
+                        </div>
+
+                        <!-- Moyenne au BAC -->
+                        <div>
+                            <label for="moyenne_bac" class="block text-sm font-semibold text-gray-700 mb-2">Moyenne au
+                                BAC</label>
+                            <input type="number" name="moyenne_bac" id="moyenne_bac" step="0.01" min="0" max="20"
+                                value="{{ old('moyenne_bac', $etudiant->moyenne_bac) }}" placeholder="00.00"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
+                        </div>
                     </div>
+                    <p class="text-xs text-gray-500 mt-1">Facultatif, mais recommandé pour l'évaluation de votre
+                        dossier.</p>
 
                     <!-- Adresse Actuelle -->
                     <div>
