@@ -74,8 +74,8 @@ class DemandeLogement extends Model
         $points += (int)($etudiant->moyenne_bac * 5);
 
         // 2. Récence du bac (max 50 points)
-        if ($etudiant->date_obtention_bac) {
-            $yearsSinceBac = $etudiant->date_obtention_bac->diffInYears(now());
+        if ($etudiant->annee_obtention_bac) {
+            $yearsSinceBac = now()->year - $etudiant->annee_obtention_bac;
             $points += max(0, 10 - (int)$yearsSinceBac) * 5;
         }
 

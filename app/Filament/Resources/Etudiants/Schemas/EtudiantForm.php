@@ -24,7 +24,10 @@ class EtudiantForm
             ->required(),
             \Filament\Forms\Components\TextInput::make('sexe')
             ->required(),
-            \Filament\Forms\Components\DatePicker::make('date_obtention_bac'),
+            \Filament\Forms\Components\TextInput::make('annee_obtention_bac')
+            ->numeric()
+            ->minValue(1900)
+            ->maxValue(date('Y') + 1),
             \Filament\Forms\Components\TextInput::make('moyenne_bac')
             ->numeric()
             ->step(0.01)

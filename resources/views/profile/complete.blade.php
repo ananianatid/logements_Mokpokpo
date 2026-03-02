@@ -124,14 +124,15 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Date d'obtention du BAC -->
+                        <!-- Année d'obtention du BAC -->
                         <div>
-                            <label for="date_obtention_bac" class="block text-sm font-semibold text-gray-700 mb-2">Année
-                                /
-                                Date d'obtention du BAC</label>
-                            <input type="date" name="date_obtention_bac" id="date_obtention_bac"
-                                value="{{ old('date_obtention_bac', $etudiant->date_obtention_bac ? $etudiant->date_obtention_bac->format('Y-m-d') : '') }}"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
+                            <label for="annee_obtention_bac"
+                                class="block text-sm font-semibold text-gray-700 mb-2">Année
+                                d'obtention de votre baccalauréat</label>
+                            <input type="number" name="annee_obtention_bac" id="annee_obtention_bac" min="1900"
+                                max="{{ date('Y') + 1 }}"
+                                value="{{ old('annee_obtention_bac', $etudiant->annee_obtention_bac) }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-gray-600">
                         </div>
 
                         <!-- Moyenne au BAC -->

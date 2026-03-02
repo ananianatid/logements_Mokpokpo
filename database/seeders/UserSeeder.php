@@ -47,35 +47,7 @@ class UserSeeder extends Seeder
             return "{$nom}{$prenom}@mokpokpo.tg";
         };
 
-        // 2. 20 Etudiants
-        for ($i = 0; $i < 20; $i++) {
-            $nom = $faker->lastName;
-            $prenom = $faker->firstName;
-            // Generate a unique email
-            $email = $formatEmail($nom, $prenom);
-            // In case of duplicate emails
-            $counter = 1;
-            while (User::where('email', $email)->exists()) {
-                $email = $formatEmail($nom, $prenom . $counter);
-                $counter++;
-            }
-
-            $user = User::create([
-                'email' => $email,
-                'password' => $password,
-                'role' => 'Etudiant',
-                'is_active' => true,
-            ]);
-
-            Etudiant::create([
-                'user_id' => $user->id,
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'date_naissance' => $faker->date(),
-                'sexe' => $faker->randomElement(['Masculin', 'Feminin']),
-                'profil_complet' => false,
-            ]);
-        }
+        // Removed student seeding as students authenticate dynamically via API
 
         // 3. 1 Fixed Administratif for easy access
         $userAdmin = User::create([

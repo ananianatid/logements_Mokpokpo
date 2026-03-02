@@ -17,7 +17,8 @@ return new class extends Migration {
             $table->string('prenom');
             $table->date('date_naissance');
             $table->enum('sexe', ['Masculin', 'Feminin']);
-            $table->date('date_obtention_bac')->nullable();
+            $table->year('annee_obtention_bac')->nullable();
+            $table->string('photo_path')->nullable();
             $table->string('adresse_actuelle')->nullable();
             $table->enum('situation_matrimoniale', ['Celibataire', 'Marie', 'Divorce', 'Veuf'])->nullable();
             $table->boolean('profil_complet')->default(false);

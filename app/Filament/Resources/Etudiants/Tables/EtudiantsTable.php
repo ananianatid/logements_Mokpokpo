@@ -27,8 +27,7 @@ class EtudiantsTable
                     ->sortable(),
                 TextColumn::make('sexe')
                     ->searchable(),
-                TextColumn::make('date_obtention_bac')
-                    ->date()
+                TextColumn::make('annee_obtention_bac')
                     ->sortable(),
                 TextColumn::make('moyenne_bac')
                     ->sortable()

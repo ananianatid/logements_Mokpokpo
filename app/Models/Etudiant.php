@@ -8,13 +8,13 @@ class Etudiant extends Model
 {
     protected $fillable = [
         'user_id', 'nom', 'prenom', 'date_naissance', 'sexe',
-        'date_obtention_bac', 'moyenne_bac', 'adresse_actuelle',
-        'situation_matrimoniale', 'profil_complet'
+        'annee_obtention_bac', 'moyenne_bac', 'adresse_actuelle',
+        'situation_matrimoniale', 'profil_complet', 'photo_path'
     ];
 
     protected $casts = [
         'date_naissance' => 'date',
-        'date_obtention_bac' => 'date',
+        'annee_obtention_bac' => 'integer',
         'moyenne_bac' => 'float',
         'profil_complet' => 'boolean',
     ];

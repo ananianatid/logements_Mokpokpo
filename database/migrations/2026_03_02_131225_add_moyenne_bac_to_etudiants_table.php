@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('etudiants', function (Blueprint $table) {
-            $table->decimal('moyenne_bac', 4, 2)->nullable()->after('date_obtention_bac');
+            $table->decimal('moyenne_bac', 4, 2)->nullable()->after('annee_obtention_bac');
         });
     }
 

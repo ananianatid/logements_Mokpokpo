@@ -86,8 +86,8 @@
                         </li>
                         <li class="flex justify-between items-center">
                             <span class="font-medium">Date du BAC :</span>
-                            <span class="text-gray-900">{{ $user->etudiant->date_obtention_bac ?
-                                $user->etudiant->date_obtention_bac->format('d/m/Y') : 'Non renseigné' }}</span>
+                            <span class="text-gray-900">{{ $user->etudiant->annee_obtention_bac ?: 'Non renseigné'
+                                }}</span>
                         </li>
                         <li class="flex justify-between items-center">
                             <span class="font-medium">Mobilité/Handicap :</span>
