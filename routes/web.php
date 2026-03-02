@@ -18,6 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/demande-logement/nouvelle', [\App\Http\Controllers\DemandeLogementController::class , 'create'])->name('demandes.create');
     Route::post('/demande-logement/nouvelle', [\App\Http\Controllers\DemandeLogementController::class , 'store'])->name('demandes.store');
 
+    // Résidences
+    Route::get('/residences', [\App\Http\Controllers\ResidenceController::class , 'index'])->name('residences.index');
+
     // Incidents
     Route::post('/incidents', [\App\Http\Controllers\IncidentController::class , 'store'])->name('incidents.store');
 });
