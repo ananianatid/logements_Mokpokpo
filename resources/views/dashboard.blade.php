@@ -193,16 +193,27 @@
                             </div>
                         </div>
 
-                        <ul class="space-y-2 text-[10px]">
+                        <ul class="space-y-3 text-[10px]">
                             @foreach($activationProgress['steps'] as $key => $step)
-                            <li class="flex items-center gap-2">
-                                <i
-                                    class="fas {{ $step['done'] ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200' }}"></i>
-                                <span class="{{ $step['done'] ? 'text-gray-700 font-medium' : 'text-gray-400' }}">{{
-                                    $step['label'] }}</span>
-                                @if($key === 'payments' && !$step['done'])
-                                <span class="ml-auto bg-gray-100 px-1.5 rounded font-bold">{{ $step['count'] }}/{{
-                                    $step['required'] }}</span>
+                            <li class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2">
+                                    <i
+                                        class="fas {{ $step['done'] ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-200' }}"></i>
+                                    <span class="{{ $step['done'] ? 'text-gray-700 font-medium' : 'text-gray-400' }}">
+                                        {{ $step['label'] }}
+                                    </span>
+                                    @if($key === 'payments' && !$step['done'])
+                                    <span class="ml-auto bg-gray-100 px-1.5 rounded font-bold">{{ $step['count'] }}/{{
+                                        $step['required'] }}</span>
+                                    @endif
+                                </div>
+                                @if(!$step['done'] && isset($step['date_rendez_vous']) && $step['date_rendez_vous'])
+                                <div
+                                    class="ml-5 flex items-center gap-1.5 text-blue-600 bg-blue-50 px-2 py-1 rounded w-fit font-semibold">
+                                    <i class="fas fa-calendar-alt text-[9px]"></i>
+                                    <span>RDV : {{ \Carbon\Carbon::parse($step['date_rendez_vous'])->translatedFormat('d
+                                        F à H:i') }}</span>
+                                </div>
                                 @endif
                             </li>
                             @endforeach

@@ -38,20 +38,20 @@ class HousingActivationService
      */
     public function getActivationProgress(ContratHabitation $contrat): array
     {
+        $edlEntree = $contrat->etatsDesLieux()
+            ->where(fn($query) => $query->where('type', '=', 'Entrée'))
+            ->first();
+
         $steps = [
             'signatures' => [
                 'label' => 'Signatures du contrat',
                 'done' => (bool) ($contrat->statut_signature_etudiant && $contrat->statut_signature_administratif),
+                'date_rendez_vous' => $contrat->date_rendez_vous,
             ],
             'inspection' => [
                 'label' => "État des lieux d'entrée",
-                'done' => $contrat->etatsDesLieux()
-                    ->where(function ($query) {
-                        $query->where('type', '=', 'Entrée')
-                            ->where('signe_etudiant', '=', true)
-                            ->where('signe_concierge', '=', true);
-                    })
-                    ->exists(),
+                'done' => (bool) ($edlEntree && $edlEntree->signe_etudiant && $edlEntree->signe_concierge),
+                'date_rendez_vous' => $edlEntree?->date_rendez_vous,
             ],
             'payments' => [
                 'label' => '3 premiers mois payés',
