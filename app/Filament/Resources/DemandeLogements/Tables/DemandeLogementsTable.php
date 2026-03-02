@@ -16,6 +16,7 @@ class DemandeLogementsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('priorite', 'desc')
             ->columns([
                 TextColumn::make('etudiant.nom')
                     ->label('Étudiant')
