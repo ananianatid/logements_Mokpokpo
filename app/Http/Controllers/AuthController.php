@@ -24,7 +24,8 @@ class AuthController extends Controller
         // Si l'email se termine par @defitech.tg, on interroge l'API
         if (Str::endsWith($email, '@defitech.tg')) {
             try {
-                $response = Http::post('http://localhost:8000/api/students/verify', [
+                $apiUrl = env('DEFITECH_API_URL', 'http://localhost:8000/api');
+                $response = Http::post($apiUrl . '/students/verify', [
                     'email' => $email,
                     'password' => $credentials['password'],
                 ]);
