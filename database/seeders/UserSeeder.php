@@ -73,7 +73,7 @@ class UserSeeder extends Seeder
                 'prenom' => $prenom,
                 'date_naissance' => $faker->date(),
                 'sexe' => $faker->randomElement(['Masculin', 'Feminin']),
-                'profil_complet' => true,
+                'profil_complet' => false,
             ]);
         }
 
