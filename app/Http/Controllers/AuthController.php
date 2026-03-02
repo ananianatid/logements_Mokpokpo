@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 use App\Models\User;
 use App\Models\Etudiant;
 
@@ -18,6 +19,82 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+        $email = $credentials['email'];
+
+        // Si l'email se termine par @defitech.tg, on interroge l'API
+        if (Str::endsWith($email, '@defitech.tg')) {
+            try {
+                $response = Http::post('http://localhost:8000/api/students/verify', [
+                    'email' => $email,
+                    'password' => $credentials['password'],
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json('data');
+
+                    // Récupération ou création de l'User
+                    $user = User::firstOrCreate(
+                    ['email' => $email],
+                    [
+                        'password' => Hash::make($credentials['password']),
+                        'role' => 'Etudiant',
+                        'is_active' => true,
+                    ]
+                    );
+
+                    // Mise à jour du mot de passe en local au cas où il a changé sur la plateforme principale
+                    $user->update([
+                        'password' => Hash::make($credentials['password'])
+                    ]);
+
+                    $sexe = 'Masculin';
+                    if (isset($data['gender'])) {
+                        $sexe = $data['gender'] === 'F' ? 'Feminin' : 'Masculin';
+                    }
+
+                    $dateObtentionBac = null;
+                    if (isset($data['bac_year'])) {
+                        $dateObtentionBac = $data['bac_year'] . '-01-01';
+                    }
+
+                    $birthDate = now()->subYears(18)->toDateString();
+                    if (!empty($data['birth_date'])) {
+                        $birthDate = date('Y-m-d', strtotime($data['birth_date']));
+                    }
+
+                    // Création ou mise à jour du profil Étudiant
+                    Etudiant::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'nom' => $data['last_name'] ?? 'Inconnu',
+                        'prenom' => $data['first_names'] ?? 'Inconnu',
+                        'date_naissance' => $birthDate,
+                        'sexe' => $sexe,
+                        'date_obtention_bac' => $dateObtentionBac,
+                        'adresse_actuelle' => $data['address'] ?? null,
+                        'profil_complet' => true,
+                    ]
+                    );
+
+                    Auth::login($user);
+                    $request->session()->regenerate();
+
+                    return redirect()->intended('/dashboard')->with('success', 'Bienvenue de retour !');
+                }
+                else {
+                    return back()->withErrors([
+                        'email' => 'Identifiants incorrects ou compte non trouvé sur la plateforme Defitech.',
+                    ])->onlyInput('email');
+                }
+            }
+            catch (\Exception $e) {
+                return back()->withErrors([
+                    'email' => 'Impossible de contacter le serveur d\'authentification étudiant. Veuillez réessayer plus tard.',
+                ])->onlyInput('email');
+            }
+        }
+
+        // Pour tous les autres emails (le personnel avec @mokpokpo.tg)
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
