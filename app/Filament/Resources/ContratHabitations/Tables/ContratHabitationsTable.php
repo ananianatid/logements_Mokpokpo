@@ -15,6 +15,7 @@ use Filament\Notifications\Notification;
 use App\Models\Concierge;
 use App\Models\EtatDesLieux;
 use App\Models\FacturePaiement;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ContratHabitationsTable
 {
@@ -132,6 +133,17 @@ class ContratHabitationsTable
                             ->body('L\'état des lieux d\'entrée et la facture initiale ont été générés.')
                             ->success()
                             ->send();
+                    }),
+                Action::make('genererPdf')
+                    ->label('Générer Contrat (PDF)')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function ($record) {
+                        $pdf = Pdf::loadView('pdf.contrat', ['contrat' => $record]);
+                        
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                        }, "Contrat_{$record->id}_{$record->etudiant->nom}.pdf");
                     }),
             ])
             ->toolbarActions([
