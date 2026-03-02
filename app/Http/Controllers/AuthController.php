@@ -52,9 +52,14 @@ class AuthController extends Controller
                         $sexe = $data['gender'] === 'F' ? 'Feminin' : 'Masculin';
                     }
 
-                    $dateObtentionBac = null;
+                    $anneeObtentionBac = null;
                     if (isset($data['bac_year'])) {
-                        $dateObtentionBac = $data['bac_year'] . '-01-01';
+                        $anneeObtentionBac = $data['bac_year'];
+                    }
+
+                    $photoPath = null;
+                    if (isset($data['photo_path'])) {
+                        $photoPath = $data['photo_path'];
                     }
 
                     $birthDate = now()->subYears(18)->toDateString();
@@ -70,9 +75,10 @@ class AuthController extends Controller
                         'prenom' => $data['first_names'] ?? 'Inconnu',
                         'date_naissance' => $birthDate,
                         'sexe' => $sexe,
-                        'date_obtention_bac' => $dateObtentionBac,
+                        'annee_obtention_bac' => $anneeObtentionBac,
+                        'photo_path' => $photoPath,
                         'adresse_actuelle' => $data['address'] ?? null,
-                        'profil_complet' => true,
+                        'profil_complet' => false,
                     ]
                     );
 
