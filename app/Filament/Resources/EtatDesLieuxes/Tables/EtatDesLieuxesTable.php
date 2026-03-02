@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 
 class EtatDesLieuxesTable
 {
@@ -52,6 +53,16 @@ class EtatDesLieuxesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('genererPdf')
+                    ->label('Générer PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function ($record) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.etat_des_lieux', ['edl' => $record]);
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                        }, "etat_des_lieux_{$record->id}.pdf");
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
