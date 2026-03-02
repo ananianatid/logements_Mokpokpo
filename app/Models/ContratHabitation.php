@@ -18,7 +18,8 @@ class ContratHabitation extends Model
         'statut_signature_administratif',
         'date_signature_etudiant',
         'date_signature_administratif',
-        'fichier_contrat_url'
+        'fichier_contrat_url',
+        'date_rendez_vous'
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class ContratHabitation extends Model
         'statut_signature_administratif' => 'boolean',
         'date_signature_etudiant' => 'datetime',
         'date_signature_administratif' => 'datetime',
+        'date_rendez_vous' => 'datetime',
     ];
 
     public function etudiant()

@@ -13,7 +13,7 @@ class EtudiantObserver
     {
         // Recalculate priority for all pending housing requests
         $etudiant->demandeLogements()
-            ->where('statut', '=', 'En attente')
+            ->where(fn($query) => $query->where('statut', '=', 'En attente'))
             ->get()
             ->each(function ($demande) {
             $demande->priorite = $demande->calculatePriorityScore();

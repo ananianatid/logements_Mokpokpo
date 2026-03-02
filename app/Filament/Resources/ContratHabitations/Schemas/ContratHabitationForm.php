@@ -13,7 +13,7 @@ class ContratHabitationForm
             ->components([
             \Filament\Forms\Components\Select::make('etudiant_id')
             ->relationship('etudiant', 'nom')
-            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nom} {$record->prenom}")
+            ->getOptionLabelFromRecordUsing(fn($record): string => (string)"{$record->nom} {$record->prenom}")
             ->searchable()
             ->required(),
 
@@ -26,7 +26,7 @@ class ContratHabitationForm
             \Filament\Forms\Components\Select::make('administratif_id')
             ->label('Agent Administratif')
             ->relationship('administratif', 'nom')
-            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->nom} {$record->prenom}")
+            ->getOptionLabelFromRecordUsing(fn($record): string => (string)"{$record->nom} {$record->prenom}")
             ->searchable()
             ->required(),
 
@@ -44,6 +44,11 @@ class ContratHabitationForm
             ->label('Date de fin')
             ->required()
             ->default(now()->addYear()),
+
+            \Filament\Forms\Components\DateTimePicker::make('date_rendez_vous')
+            ->label('Date de rendez-vous pour signature')
+            ->native(false)
+            ->displayFormat('d/m/Y H:i'),
 
             \Filament\Forms\Components\Select::make('statut')
             ->options([

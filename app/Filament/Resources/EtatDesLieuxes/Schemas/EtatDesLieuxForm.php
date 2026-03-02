@@ -37,6 +37,11 @@ class EtatDesLieuxForm
             ->required()
             ->default(now()),
 
+            \Filament\Forms\Components\DateTimePicker::make('date_rendez_vous')
+            ->label('Date de rendez-vous pour état des lieux')
+            ->native(false)
+            ->displayFormat('d/m/Y H:i'),
+
             \Filament\Forms\Components\Textarea::make('remarques_generales')
             ->label('Remarques générales')
             ->columnSpanFull(),
