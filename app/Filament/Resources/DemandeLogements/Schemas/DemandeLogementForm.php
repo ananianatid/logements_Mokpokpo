@@ -55,9 +55,13 @@ class DemandeLogementForm
             \Filament\Forms\Components\Select::make('logement_propose_id')
             ->label('Logement attribué')
             ->options(fn(Get $get) =>
-        Logement::where('batiment_id', $get('batiment_id'))
+        Logement::with('type_logement')
+        ->where('batiment_id', $get('batiment_id'))
         ->where('statut', 'Disponible')
-        ->pluck('numero_chambre', 'id')
+        ->get()
+        ->mapWithKeys(fn($logement) => [
+        $logement->id => "{$logement->numero_chambre} (" . ($logement->type_logement->nom ?? '?') . ")"
+        ])
         )
             ->searchable()
             ->hint('Uniquement les chambres disponibles du bâtiment choisi'),
