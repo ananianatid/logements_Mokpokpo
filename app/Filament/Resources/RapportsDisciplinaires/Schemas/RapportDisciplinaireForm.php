@@ -64,7 +64,7 @@ class RapportDisciplinaireForm
 
             Select::make('rapporte_par_id')
             ->label('Rapporté par')
-            ->options(User::whereIn('role', ['Admin', 'Concierge', 'Administratif'])->pluck('name', 'id'))
+            ->options(User::whereIn('role', ['Administratif', 'Concierge'])->pluck('email', 'id'))
             ->default(fn() => Auth::id())
             ->required()
             ->searchable(),
