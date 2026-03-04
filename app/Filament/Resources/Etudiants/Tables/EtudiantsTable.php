@@ -32,7 +32,8 @@ class EtudiantsTable
                 TextColumn::make('moyenne_bac')
                     ->sortable()
                     ->label('Moyenne Bac'),
-                TextColumn::make('adresse_actuelle')
+                TextColumn::make('prefecture_origine')
+                    ->label('Préfecture d\'origine')
                     ->searchable(),
                 TextColumn::make('situation_matrimoniale')
                     ->searchable(),

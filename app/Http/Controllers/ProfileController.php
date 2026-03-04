@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DistancePrefecture;
 
 class ProfileController extends Controller
 {
@@ -29,8 +30,9 @@ class ProfileController extends Controller
 
         $handicaps = \App\Models\Handicap::all();
         $selectedHandicaps = $etudiant->handicaps->pluck('id')->toArray();
+        $prefecturesParRegion = DistancePrefecture::groupedByRegion();
 
-        return view('profile.complete', compact('etudiant', 'handicaps', 'selectedHandicaps'));
+        return view('profile.complete', compact('etudiant', 'handicaps', 'selectedHandicaps', 'prefecturesParRegion'));
     }
 
     public function update(Request $request)
@@ -48,7 +50,7 @@ class ProfileController extends Controller
             'sexe' => ['required', 'in:Masculin,Feminin'],
             'annee_obtention_bac' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
             'moyenne_bac' => ['nullable', 'numeric', 'min:0', 'max:20'],
-            'adresse_actuelle' => ['nullable', 'string', 'max:500'],
+            'prefecture_origine' => ['nullable', 'string', 'max:255'],
             'situation_matrimoniale' => ['nullable', 'in:Celibataire,Marie,Divorce,Veuf'],
             'handicaps' => ['nullable', 'array'],
             'handicaps.*' => ['exists:handicaps,id'],
@@ -67,7 +69,7 @@ class ProfileController extends Controller
             'sexe' => $validated['sexe'],
             'annee_obtention_bac' => $validated['annee_obtention_bac'],
             'moyenne_bac' => $validated['moyenne_bac'],
-            'adresse_actuelle' => $validated['adresse_actuelle'],
+            'prefecture_origine' => $validated['prefecture_origine'] ?? null,
             'situation_matrimoniale' => $validated['situation_matrimoniale'],
             'profil_complet' => true,
         ]);

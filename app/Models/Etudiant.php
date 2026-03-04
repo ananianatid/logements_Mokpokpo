@@ -8,7 +8,7 @@ class Etudiant extends Model
 {
     protected $fillable = [
         'user_id', 'nom', 'prenom', 'date_naissance', 'sexe',
-        'annee_obtention_bac', 'moyenne_bac', 'adresse_actuelle',
+        'annee_obtention_bac', 'moyenne_bac', 'prefecture_origine',
         'situation_matrimoniale', 'profil_complet', 'photo_path'
     ];
 

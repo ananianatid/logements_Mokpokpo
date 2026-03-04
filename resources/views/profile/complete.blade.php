@@ -147,14 +147,96 @@
                     <p class="text-xs text-gray-500 mt-1">Facultatif, mais recommandé pour l'évaluation de votre
                         dossier.</p>
 
-                    <!-- Adresse Actuelle -->
-                    <div>
-                        <label for="adresse_actuelle" class="block text-sm font-semibold text-gray-700 mb-2">Adresse
-                            actuelle complète</label>
-                        <textarea name="adresse_actuelle" id="adresse_actuelle" rows="3"
-                            placeholder="Quartier, Ville, Pays..."
-                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-y">{{ old('adresse_actuelle', $etudiant->adresse_actuelle) }}</textarea>
+                    {{-- Préfecture d'origine --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Région --}}
+                        <div>
+                            <label for="region_select" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Région d'origine
+                            </label>
+                            <select id="region_select"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
+                                <option value="">-- Sélectionnez une région --</option>
+                                @foreach(array_keys($prefecturesParRegion) as $region)
+                                <option value="{{ $region }}" {{ (old('prefecture_origine', $etudiant->
+                                    prefecture_origine ?? '') && str_contains(old('prefecture_origine',
+                                    $etudiant->prefecture_origine ?? ''), '')) ? '' : '' }}
+                                    data-region="{{ $region }}">
+                                    {{ $region }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Préfecture --}}
+                        <div>
+                            <label for="prefecture_origine" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Préfecture d'origine
+                            </label>
+                            <select name="prefecture_origine" id="prefecture_origine"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
+                                <option value="">-- Choisissez d'abord une région --</option>
+                                @foreach($prefecturesParRegion as $region => $prefectures)
+                                @foreach($prefectures as $prefecture)
+                                <option value="{{ $prefecture }}" data-region="{{ $region }}" {{
+                                    old('prefecture_origine', $etudiant->prefecture_origine ?? '') == $prefecture ?
+                                    'selected' : '' }}>
+                                    {{ $prefecture }}
+                                </option>
+                                @endforeach
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
+
+                    <script>
+                        (function () {
+                            const regionSelect = document.getElementById('region_select');
+                            const prefSelect = document.getElementById('prefecture_origine');
+                            const allOptions = Array.from(prefSelect.options).slice(1); // skip placeholder
+
+                            // Detect current region from selected prefecture
+                            const currentPref = prefSelect.value;
+                            let currentRegion = '';
+                            if (currentPref) {
+                                const selectedOpt = allOptions.find(o => o.value === currentPref);
+                                if (selectedOpt) currentRegion = selectedOpt.dataset.region;
+                            }
+
+                            function filterPrefectures(selectedRegion) {
+                                // Reset
+                                while (prefSelect.options.length > 1) prefSelect.remove(1);
+
+                                if (!selectedRegion) {
+                                    prefSelect.options[0].text = '-- Choisissez d\'abord une région --';
+                                    return;
+                                }
+                                prefSelect.options[0].text = '-- Sélectionnez une préfecture --';
+
+                                allOptions
+                                    .filter(o => o.dataset.region === selectedRegion)
+                                    .forEach(o => {
+                                        const clone = o.cloneNode(true);
+                                        if (clone.value === currentPref && selectedRegion === currentRegion) {
+                                            clone.selected = true;
+                                        }
+                                        prefSelect.appendChild(clone);
+                                    });
+                            }
+
+                            // Init
+                            if (currentRegion) {
+                                regionSelect.value = currentRegion;
+                                filterPrefectures(currentRegion);
+                            }
+
+                            regionSelect.addEventListener('change', function () {
+                                currentRegion = '';
+                                currentPref && (currentPref = '');
+                                filterPrefectures(this.value);
+                            });
+                        })();
+                    </script>
 
                     <!-- Situation Matrimoniale -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

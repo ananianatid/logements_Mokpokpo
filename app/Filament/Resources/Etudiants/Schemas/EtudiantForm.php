@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Etudiants\Schemas;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use App\Models\DistancePrefecture;
 
 class EtudiantForm
 {
@@ -34,7 +36,17 @@ class EtudiantForm
             ->minValue(0)
             ->maxValue(20)
             ->label('Moyenne au Bac'),
-            \Filament\Forms\Components\TextInput::make('adresse_actuelle'),
+            Select::make('prefecture_origine')
+            ->label('Préfecture d\'origine')
+            ->options(function () {
+            $grouped = [];
+            foreach (DistancePrefecture::orderBy('region')->orderBy('prefecture')->get() as $row) {
+                $grouped[$row->region][$row->prefecture] = $row->prefecture;
+            }
+            return $grouped;
+        })
+            ->searchable()
+            ->nullable(),
             \Filament\Forms\Components\TextInput::make('situation_matrimoniale'),
             \Filament\Forms\Components\Toggle::make('profil_complet')
             ->required(),

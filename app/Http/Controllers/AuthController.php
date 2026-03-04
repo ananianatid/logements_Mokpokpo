@@ -78,7 +78,6 @@ class AuthController extends Controller
                         'sexe' => $sexe,
                         'annee_obtention_bac' => $anneeObtentionBac,
                         'photo_path' => $photoPath,
-                        'adresse_actuelle' => $data['address'] ?? null,
                         'profil_complet' => false,
                     ]
                     );
