@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             HandicapSeeder::class ,
             UserSeeder::class ,
             LogementSeeder::class ,
+            DistancePrefectureSeeder::class ,
         ]);
     }
 }
