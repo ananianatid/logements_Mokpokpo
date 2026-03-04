@@ -5,16 +5,13 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('incidents', function (Blueprint $table) {
+        Schema::create('incidents_techniques', function (Blueprint $table) {
             $table->id();
             $table->foreignId('logement_id')->constrained('logements')->onDelete('cascade');
-            $table->foreignId('signale_par_id')->constrained('etudiants')->onDelete('cascade');
-            $table->enum('type', ['Panne', 'Dégât', 'Voisinage']);
+            $table->foreignId('etudiant_id')->constrained('etudiants')->onDelete('cascade');
+            $table->enum('type', ['Panne', 'Dégât', 'Voisinage', 'Autre']);
             $table->text('description');
             $table->enum('statut', ['Nouveau', 'En cours', 'Résolu'])->default('Nouveau');
             $table->timestamp('date_signalement')->useCurrent();
@@ -26,11 +23,8 @@ return new class extends Migration {
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('incidents');
+        Schema::dropIfExists('incidents_techniques');
     }
 };

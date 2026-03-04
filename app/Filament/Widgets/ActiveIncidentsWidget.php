@@ -2,14 +2,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Incident;
+use App\Models\IncidentTechnique;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class ActiveIncidentsWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Incidents en cours';
+    protected static ?string $heading = 'Incidents Techniques en cours';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -22,7 +22,7 @@ class ActiveIncidentsWidget extends BaseWidget
     {
         return $table
             ->query(
-            Incident::query()->whereIn('statut', ['Signalé', 'En cours'])->latest()
+            IncidentTechnique::query()->whereIn('statut', ['Nouveau', 'En cours'])->latest()
         )
             ->columns([
             Tables\Columns\TextColumn::make('logement.numero_chambre')
