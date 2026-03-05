@@ -26,11 +26,6 @@ class LogementSeeder extends Seeder
                 'caracteristique' => '2 lits simples, 2 bureaux, salle de bain partagée. Convivial et économique.',
                 'prix' => 15000.0,
             ],
-            [
-                'nom' => 'Appartement Partagé',
-                'caracteristique' => '3 à 4 chambres individuelles avec cuisine et salon communs.',
-                'prix' => 35000.0,
-            ],
         ];
 
         $typeModels = collect();
@@ -38,21 +33,47 @@ class LogementSeeder extends Seeder
             $typeModels->push(TypeLogement::create($type));
         }
 
+        $studioType = $typeModels->where('nom', 'Studio Individuel')->first();
+        $doubleType = $typeModels->where('nom', 'Chambre Double')->first();
+
         // 2. Create actual rooms (logements) for each building
         $batiments = Batiment::all();
 
         foreach ($batiments as $batiment) {
             $etages = $batiment->nombre_etages ?? 3;
             $chambresParEtage = 8;
+            $indexChambre = 0;
 
             for ($etage = 0; $etage <= $etages; $etage++) {
                 for ($numero = 1; $numero <= $chambresParEtage; $numero++) {
                     $numeroChambre = sprintf("%d%02d", $etage, $numero);
+                    $indexChambre++;
+
+                    // Determine type based on building requirements
+                    $typeLogementId = null;
+
+                    if ($batiment->nom === 'Bâtiment Wole Soyinka') {
+                        // 100% Studio Individuel
+                        $typeLogementId = $studioType->id;
+                    }
+                    elseif ($batiment->nom === 'Bâtiment Cheikh Anta Diop') {
+                        // 100% Chambre Double
+                        $typeLogementId = $doubleType->id;
+                    }
+                    elseif ($batiment->nom === 'Bâtiment Samir Amin') {
+                        // Hybrid 50/50
+                        $totalExpected = ($etages + 1) * $chambresParEtage;
+                        $typeLogementId = ($indexChambre <= $totalExpected / 2) ? $studioType->id : $doubleType->id;
+                    }
+                    else {
+                        // Default fallback
+                        $typeLogementId = $typeModels->random()->id;
+                    }
 
                     Logement::create([
                         'numero_chambre' => "CH-" . $numeroChambre,
                         'batiment_id' => $batiment->id,
-                        'type_logement_id' => $typeModels->random()->id,
+                        'type_logement_id' => $typeLogementId,
                         'statut' => 'Disponible',
                         'etage' => $etage,
                     ]);

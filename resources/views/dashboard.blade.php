@@ -35,6 +35,7 @@
                         class="text-gray-500 hover:text-gray-700 hover:border-gray-300 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm">
                         Nos Résidences
                     </a>
+                    <a href="{{ route('home') }}" class="hover:text-blue-600 transition">Comment ça marche</a>
                 </div>
                 <div>
                     <div class="flex items-center gap-4">

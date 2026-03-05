@@ -100,9 +100,9 @@
                     <span class="text-2xl font-bold text-blue-900 tracking-tight">Mokpokpo</span>
                 </div>
                 <div class="hidden md:flex space-x-8 text-gray-600 font-medium">
-                    <a href="#processus" class="hover:text-blue-600 transition">Comment ça marche</a>
-                    <a href="#residences" class="hover:text-blue-600 transition">Résidences</a>
-                    <a href="#faq" class="hover:text-blue-600 transition">FAQ</a>
+                    <!-- <a href="#processus" class="hover:text-blue-600 transition">Comment ça marche</a> -->
+                    <a href="{{route('residences.index')}}" class="hover:text-blue-600 transition">Résidences</a>
+                    <!-- <a href="#faq" class="hover:text-blue-600 transition">FAQ</a> -->
                 </div>
                 <div class="hidden md:flex">
                     @auth
@@ -215,6 +215,12 @@
                                 class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 hover:scale-105 transition transform shadow-xl text-center">
                                 Voir le processus
                             </a>
+                            @auth
+                            <a href="{{ route('dashboard') }}"
+                                class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 hover:scale-105 transition transform shadow-xl text-center">
+                                Voir le dashboard
+                            </a>
+                            @endauth
                             @guest
                             <button onclick="toggleModal('login-modal')"
                                 class="border-2 border-white/80 bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition shadow-lg">
