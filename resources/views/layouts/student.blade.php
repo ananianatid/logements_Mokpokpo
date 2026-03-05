@@ -50,16 +50,62 @@
                         marche</a>
                 </div>
                 <div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-gray-700 font-medium hidden sm:inline">{{ $user->email }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit"
-                                class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-100 transition text-sm">
-                                Déconnexion
-                            </button>
-                        </form>
+                    <div class="relative" id="user-menu-wrapper">
+                        <button id="user-menu-button"
+                            class="flex items-center gap-2 p-2 rounded-xl hover:bg-gray-100 transition duration-200">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center border border-blue-200">
+                                <i class="fas fa-user text-lg"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="user-dropdown"
+                            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all duration-200">
+                            <div class="px-4 py-3 border-b border-gray-50 mb-2">
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Connecté en
+                                    tant que</p>
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ $user->email }}</p>
+                            </div>
+
+                            <a href="{{ route('profile.complete') }}"
+                                class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">
+                                <i class="fas fa-user-circle w-5"></i>
+                                Mon profil
+                            </a>
+
+                            <div class="border-t border-gray-50 mt-2 pt-2">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
+                                        <i class="fas fa-sign-out-alt w-5"></i>
+                                        Déconnexion
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const button = document.getElementById('user-menu-button');
+                            const dropdown = document.getElementById('user-dropdown');
+                            const wrapper = document.getElementById('user-menu-wrapper');
+
+                            button.addEventListener('click', function (e) {
+                                e.stopPropagation();
+                                dropdown.classList.toggle('hidden');
+                            });
+
+                            document.addEventListener('click', function (e) {
+                                if (!wrapper.contains(e.target)) {
+                                    dropdown.classList.add('hidden');
+                                }
+                            });
+                        });
+                    </script>
                 </div>
             </div>
         </div>
