@@ -63,12 +63,6 @@ class ProfileController extends Controller
         }
 
         $etudiant->update([
-            'nom' => $validated['nom'],
-            'prenom' => $validated['prenom'],
-            'date_naissance' => $validated['date_naissance'],
-            'sexe' => $validated['sexe'],
-            'annee_obtention_bac' => $validated['annee_obtention_bac'],
-            'moyenne_bac' => $validated['moyenne_bac'],
             'prefecture_origine' => $validated['prefecture_origine'] ?? null,
             'situation_matrimoniale' => $validated['situation_matrimoniale'],
             'profil_complet' => true,

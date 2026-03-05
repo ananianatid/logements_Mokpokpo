@@ -83,7 +83,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" name="nom" id="nom"
                                 value="{{ old('nom', $etudiant->nom !== 'inconnu' ? $etudiant->nom : '') }}" required
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition uppercase">
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition uppercase" readonly>
                         </div>
 
                         <!-- Prénom -->
@@ -93,7 +93,7 @@
                             <input type="text" name="prenom" id="prenom"
                                 value="{{ old('prenom', $etudiant->prenom !== 'inconnu' ? $etudiant->prenom : '') }}"
                                 required
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition capitalize">
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition capitalize" readonly>
                         </div>
                     </div>
 
@@ -105,21 +105,16 @@
                             <input type="date" name="date_naissance" id="date_naissance"
                                 value="{{ old('date_naissance', $etudiant->date_naissance ? $etudiant->date_naissance->format('Y-m-d') : '') }}"
                                 required
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600" readonly>
                         </div>
 
                         <!-- Sexe -->
                         <div>
                             <label for="sexe" class="block text-sm font-semibold text-gray-700 mb-2">Sexe <span
                                     class="text-red-500">*</span></label>
-                            <select name="sexe" id="sexe" required
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
-                                <option value="" disabled selected>Sélectionnez...</option>
-                                <option value="Masculin" {{ old('sexe', $etudiant->sexe) == 'Masculin' ? 'selected' : ''
-                                    }}>Masculin</option>
-                                <option value="Feminin" {{ old('sexe', $etudiant->sexe) == 'Feminin' ? 'selected' : ''
-                                    }}>Féminin</option>
-                            </select>
+                            <input type="text" name="sexe" id="sexe"
+                                value="{{ old('sexe', $etudiant->sexe) }}" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600" readonly>
                         </div>
                     </div>
 
@@ -132,7 +127,7 @@
                             <input type="number" name="annee_obtention_bac" id="annee_obtention_bac" min="1900"
                                 max="{{ date('Y') + 1 }}"
                                 value="{{ old('annee_obtention_bac', $etudiant->annee_obtention_bac) }}"
-                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-gray-600">
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-gray-600" readonly>
                         </div>
 
                         <!-- Moyenne au BAC -->
@@ -141,7 +136,7 @@
                                 BAC</label>
                             <input type="number" name="moyenne_bac" id="moyenne_bac" step="0.01" min="0" max="20"
                                 value="{{ old('moyenne_bac', $etudiant->moyenne_bac) }}" placeholder="00.00"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600">
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600" readonly>
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Facultatif, mais recommandé pour l'évaluation de votre
