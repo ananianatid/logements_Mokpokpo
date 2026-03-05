@@ -275,6 +275,11 @@
                         </div>
                         @endif
                     </div>
+                    <a href="{{ route('residences.index') }}"
+                        class="flex justify-center items-center gap-2 bg-white border border-gray-200 text-gray-700 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-sm mt-4">
+                        <i class="fas fa-building text-blue-500"></i>
+                        Voir les autres résidences
+                    </a>
                 </div>
                 @else
                 <div class="text-center py-6 text-gray-500">
@@ -284,10 +289,18 @@
                 @endif
 
                 @if(!$demande || in_array($demande->statut, ['Rejetée']))
-                <a href="{{ route('demandes.create') }}"
-                    class="block text-center w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm mt-2">
-                    Faire une demande
-                </a>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <a href="{{ route('demandes.create') }}"
+                        class="flex justify-center items-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
+                        <i class="fas fa-file-signature"></i>
+                        Faire une demande
+                    </a>
+                    <a href="{{ route('residences.index') }}"
+                        class="flex justify-center items-center gap-2 bg-white border border-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50 transition shadow-sm">
+                        <i class="fas fa-building text-blue-500"></i>
+                        Nos Résidences
+                    </a>
+                </div>
                 @elseif($demande && $demande->statut === 'Validée' && !$contrat)
                 <div class="mt-4 p-3 bg-green-50 border border-green-100 rounded-lg text-xs text-green-800">
                     <p class="font-bold mb-1"><i class="fas fa-calendar-check mr-1"></i> Félicitations !</p>
