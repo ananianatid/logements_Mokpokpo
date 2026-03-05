@@ -93,12 +93,12 @@
     <nav class="fixed w-full z-50 glass-morphism shadow-sm" x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 hover:opacity-90 transition">
                     <div class="bg-blue-600 p-2 rounded-lg text-white">
                         <i class="fas fa-university text-xl"></i>
                     </div>
                     <span class="text-2xl font-bold text-blue-900 tracking-tight">Mokpokpo</span>
-                </div>
+                </a>
                 <div class="hidden md:flex space-x-8 text-gray-600 font-medium">
                     <!-- <a href="#processus" class="hover:text-blue-600 transition">Comment ça marche</a> -->
                     <a href="{{route('residences.index')}}" class="hover:text-blue-600 transition">Résidences</a>
@@ -106,21 +106,67 @@
                 </div>
                 <div class="hidden md:flex">
                     @auth
-                    <div class="flex items-center gap-4">
-                        <span class="text-gray-700 font-medium">{{ auth()->user()->email }} ({{ auth()->user()->role
-                            }})</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit"
-                                class="bg-red-50 text-red-600 px-6 py-2 rounded-full font-semibold hover:bg-red-100 transition">
-                                Déconnexion
-                            </button>
-                        </form>
-                        @if(in_array(auth()->user()->role, ['Admin', 'Administratif', 'Comptable', 'Concierge',
-                        'Technicien']))
-                        <a href="/admin"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow-lg">Panel</a>
-                        @endif
+                    <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <button @click="open = !open"
+                            class="flex items-center gap-2 p-1 rounded-xl hover:bg-gray-100 transition duration-200">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center border border-blue-200 shadow-sm">
+                                <i class="fas fa-user-graduate text-lg"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden"
+                            style="display: none;">
+
+                            <div class="px-4 py-3 border-b border-gray-50 mb-2 bg-gray-50/50">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span
+                                        class="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">
+                                        {{ auth()->user()->role }}
+                                    </span>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->email }}</p>
+                            </div>
+
+                            @if(auth()->user()->role === 'Etudiant')
+                            <a href="{{ route('dashboard') }}"
+                                class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">
+                                <i class="fas fa-tachometer-alt w-5 text-gray-400"></i>
+                                Tableau de bord
+                            </a>
+                            <a href="{{ route('profile.complete') }}"
+                                class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">
+                                <i class="fas fa-user-circle w-5 text-gray-400"></i>
+                                Mon profil
+                            </a>
+                            @elseif(in_array(auth()->user()->role, ['Admin', 'Administratif', 'Comptable', 'Concierge',
+                            'Technicien']))
+                            <a href="/admin"
+                                class="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition">
+                                <i class="fas fa-shield-alt w-5 text-gray-400"></i>
+                                Panel Administration
+                            </a>
+                            @endif
+
+                            <div class="border-t border-gray-50 mt-2 pt-1">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition font-medium">
+                                        <i class="fas fa-sign-out-alt w-5"></i>
+                                        Déconnexion
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     @else
                     <button onclick="toggleModal('login-modal')"
@@ -140,19 +186,41 @@
         <!-- Mobile menu -->
         <div class="md:hidden" x-show="mobileMenuOpen" x-collapse>
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#processus"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Comment ça
-                    marche</a>
-                <a href="#residences"
+                <!-- <a href="#processus" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Comment ça marche</a> -->
+                <a href="{{route('residences.index')}}"
                     class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50">Résidences</a>
             </div>
             <div class="pt-4 pb-3 border-t border-gray-200 px-2 space-y-1">
                 @auth
-                <div class="block px-3 py-2 text-base font-medium text-gray-700">{{ auth()->user()->email }}</div>
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                <div class="px-3 py-3 bg-gray-50 rounded-xl mb-2">
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">{{
+                        auth()->user()->role }}</p>
+                    <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->email }}</p>
+                </div>
+
+                @if(auth()->user()->role === 'Etudiant')
+                <a href="{{ route('dashboard') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-tachometer-alt mr-2 text-gray-400"></i> Mon Dashboard
+                </a>
+                <a href="{{ route('profile.complete') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fas fa-user-circle mr-2 text-gray-400"></i> Mon Profil
+                </a>
+                @elseif(in_array(auth()->user()->role, ['Admin', 'Administratif', 'Comptable', 'Concierge',
+                'Technicien']))
+                <a href="/admin"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-shield-alt mr-2 text-blue-400"></i> Panel Administration
+                </a>
+                @endif
+
+                <form method="POST" action="{{ route('logout') }}" class="w-full pt-2">
                     @csrf
                     <button type="submit"
-                        class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-gray-50">Déconnexion</button>
+                        class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 transition border-t border-gray-100">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                    </button>
                 </form>
                 @else
                 <button onclick="toggleModal('login-modal')"
@@ -311,7 +379,8 @@
                             <div class="flex items-center gap-3 mb-2">
                                 <div
                                     class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">
-                                    <i class="fas fa-user"></i></div>
+                                    <i class="fas fa-user"></i>
+                                </div>
                                 <span class="font-semibold text-gray-700 text-sm">Votre profil étudiant</span>
                             </div>
                             <div class="space-y-2 text-sm">
@@ -371,7 +440,8 @@
                     <div class="flex lg:hidden items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg">
-                            <i class="fas fa-file-alt"></i></div>
+                            <i class="fas fa-file-alt"></i>
+                        </div>
                         <span
                             class="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-full uppercase tracking-wide">Étape
                             2</span>
@@ -442,7 +512,8 @@
                     <div class="flex lg:hidden items-center gap-4 mb-4 order-1">
                         <div
                             class="w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center text-lg">
-                            <i class="fas fa-user-check"></i></div>
+                            <i class="fas fa-user-check"></i>
+                        </div>
                         <span
                             class="text-sm font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full uppercase tracking-wide">Étape
                             3</span>
@@ -455,7 +526,8 @@
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
-                                        <i class="fas fa-check"></i></div>
+                                        <i class="fas fa-check"></i>
+                                    </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-700">Chambre 214 - Bât. A proposée</p>
                                         <p class="text-xs text-gray-500">Chambre simple • 45 000 FCFA/mois</p>
@@ -464,7 +536,8 @@
                                 <div class="flex items-start gap-3">
                                     <div
                                         class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
-                                        <i class="fas fa-clock"></i></div>
+                                        <i class="fas fa-clock"></i>
+                                    </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-700">Délai de réponse : 5 jours ouvrés
                                         </p>
@@ -515,7 +588,8 @@
                     <div class="flex lg:hidden items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-teal-600 text-white flex items-center justify-center text-lg">
-                            <i class="fas fa-file-signature"></i></div>
+                            <i class="fas fa-file-signature"></i>
+                        </div>
                         <span
                             class="text-sm font-bold text-teal-600 bg-teal-50 px-3 py-1 rounded-full uppercase tracking-wide">Étape
                             4</span>
@@ -586,7 +660,8 @@
                     <div class="flex lg:hidden items-center gap-4 mb-4 order-1">
                         <div
                             class="w-12 h-12 rounded-full bg-yellow-500 text-white flex items-center justify-center text-lg">
-                            <i class="fas fa-clipboard-list"></i></div>
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
                         <span
                             class="text-sm font-bold text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full uppercase tracking-wide">Étape
                             5</span>
@@ -648,7 +723,8 @@
                     <div class="flex lg:hidden items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center text-lg">
-                            <i class="fas fa-home"></i></div>
+                            <i class="fas fa-home"></i>
+                        </div>
                         <span
                             class="text-sm font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide">Étape
                             6</span>
@@ -791,7 +867,8 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email étudiant</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                            <i class="fas fa-envelope"></i></div>
+                            <i class="fas fa-envelope"></i>
+                        </div>
                         <input type="email" name="email" value="{{ old('email') }}"
                             placeholder="prenom.nom@etudiant.mokpokpo.edu"
                             class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50 focus:bg-white"
@@ -802,7 +879,8 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                            <i class="fas fa-lock"></i></div>
+                            <i class="fas fa-lock"></i>
+                        </div>
                         <input type="password" name="password" placeholder="••••••••"
                             class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-gray-50 focus:bg-white"
                             required>

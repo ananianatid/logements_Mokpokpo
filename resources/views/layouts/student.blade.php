@@ -66,7 +66,7 @@
                             <div class="px-4 py-3 border-b border-gray-50 mb-2">
                                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Connecté en
                                     tant que</p>
-                                <p class="text-sm font-semibold text-gray-900 truncate">{{ $user->email }}</p>
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->email }}</p>
                             </div>
 
                             <a href="{{ route('profile.complete') }}"
