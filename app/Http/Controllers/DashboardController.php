@@ -14,8 +14,15 @@ class DashboardController extends Controller
         $user = Auth::user();
         $etudiant = $user?->etudiant;
 
+        // Initialize default values
+        $demande = null;
+        $contrat = null;
+        $activationProgress = null;
+        $incidents = collect();
+        $paymentHistory = null;
+
         if (!$etudiant) {
-            return view('dashboard', compact('user'));
+            return view('dashboard', compact('user', 'etudiant', 'demande', 'contrat', 'activationProgress', 'incidents', 'paymentHistory'));
         }
 
         // 1. Get the latest housing application
@@ -23,10 +30,6 @@ class DashboardController extends Controller
 
         // 2. Get the current contract if any
         $contrat = $etudiant->contrats()->latest()->first();
-
-        $activationProgress = null;
-        $incidents = collect(); // Initialize incidents
-        $paymentHistory = null; // Initialize paymentHistory
 
         if ($contrat) {
             // Try to activate if conditions are met
