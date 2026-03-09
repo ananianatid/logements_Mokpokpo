@@ -14,7 +14,7 @@ class LocalStudentSeeder extends Seeder
      */
     public function run(): void
     {
-        $email = 'etudiant@defitech.tg';
+        $email = 'etudiant@mokpokpo.tg';
         $password = 'password';
 
         // Création de l'utilisateur
@@ -36,7 +36,7 @@ class LocalStudentSeeder extends Seeder
             'date_naissance' => '2000-01-01',
             'sexe' => 'Masculin',
             'annee_obtention_bac' => 2018,
-            'profil_complet' => true,
+            'profil_complet' => false,
         ]
         );
 

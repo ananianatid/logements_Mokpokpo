@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class ,
             LogementSeeder::class ,
             DistancePrefectureSeeder::class ,
+            LocalStudentSeeder::class ,
         ]);
     }
 }
