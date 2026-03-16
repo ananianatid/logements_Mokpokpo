@@ -18,7 +18,7 @@ class LogementResource extends Resource
 {
     protected static ?string $model = Logement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $recordTitleAttribute = 'numero_chambre';
 

@@ -18,7 +18,7 @@ class EtudiantResource extends Resource
 {
     protected static ?string $model = Etudiant::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static ?string $recordTitleAttribute = 'nom';
 

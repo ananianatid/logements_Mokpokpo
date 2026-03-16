@@ -18,7 +18,7 @@ class TypeLogementResource extends Resource
 {
     protected static ?string $model = TypeLogement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $recordTitleAttribute = 'nom';
 

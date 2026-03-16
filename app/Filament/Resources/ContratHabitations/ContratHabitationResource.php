@@ -18,7 +18,7 @@ class ContratHabitationResource extends Resource
 {
     protected static ?string $model = ContratHabitation::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $recordTitleAttribute = 'id';
 
