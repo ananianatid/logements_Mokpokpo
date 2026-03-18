@@ -62,19 +62,9 @@ class ContratHabitationForm
             ->required()
             ->default('Brouillon'),
 
-            \Filament\Forms\Components\Toggle::make('statut_signature_etudiant')
-            ->label('Signé par l\'étudiant')
-            ->required(),
-
-            \Filament\Forms\Components\Toggle::make('statut_signature_administratif')
-            ->label('Signé par l\'agent')
-            ->required(),
-
-            \Filament\Forms\Components\DateTimePicker::make('date_signature_etudiant')
-            ->label('Date signature étudiant'),
-
-            \Filament\Forms\Components\DateTimePicker::make('date_signature_administratif')
-            ->label('Date signature agent'),
+            \Filament\Forms\Components\Toggle::make('document_signe')
+            ->label('Document signé par les deux parties')
+            ->default(false),
 
             \Filament\Forms\Components\FileUpload::make('fichier_contrat_url')
             ->label('Contrat numérisé')

@@ -58,8 +58,7 @@ class EditContratHabitation extends EditRecord
                         'concierge_id' => $data['concierge_id'],
                         'date_execution' => now(), // prend directement la date du jour
                         'date_rendez_vous' => $data['date_rendez_vous'],
-                        'signe_etudiant' => false,
-                        'signe_concierge' => false,
+                        'document_signe' => false,
                     ]);
 
                     // 2. Create Premier versement (3 months)

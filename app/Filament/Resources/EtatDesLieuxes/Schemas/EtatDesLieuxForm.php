@@ -44,19 +44,9 @@ class EtatDesLieuxForm
             ->disk('public')
             ->directory('etats-des-lieux'),
 
-            \Filament\Forms\Components\Toggle::make('signe_etudiant')
-            ->label('Signé par l\'étudiant')
-            ->required(),
-
-            \Filament\Forms\Components\Toggle::make('signe_concierge')
-            ->label('Signé par le concierge')
-            ->required(),
-
-            \Filament\Forms\Components\DateTimePicker::make('date_signature_etudiant')
-            ->label('Date signature étudiant'),
-
-            \Filament\Forms\Components\DateTimePicker::make('date_signature_concierge')
-            ->label('Date signature concierge'),
+            \Filament\Forms\Components\Toggle::make('document_signe')
+            ->label('Document signé par les deux parties')
+            ->default(false),
         ]);
     }
 }

@@ -27,16 +27,9 @@ class EtatDesLieuxesTable
                     ->sortable(),
                 TextColumn::make('fichier_pdf_url')
                     ->searchable(),
-                IconColumn::make('signe_etudiant')
+                IconColumn::make('document_signe')
+                    ->label('Document Signé')
                     ->boolean(),
-                IconColumn::make('signe_concierge')
-                    ->boolean(),
-                TextColumn::make('date_signature_etudiant')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('date_signature_concierge')
-                    ->dateTime()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

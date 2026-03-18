@@ -14,10 +14,7 @@ class ContratHabitation extends Model
         'date_debut',
         'date_fin',
         'statut',
-        'statut_signature_etudiant',
-        'statut_signature_administratif',
-        'date_signature_etudiant',
-        'date_signature_administratif',
+        'document_signe',
         'fichier_contrat_url',
         'date_rendez_vous'
     ];
@@ -25,10 +22,7 @@ class ContratHabitation extends Model
     protected $casts = [
         'date_debut' => 'date',
         'date_fin' => 'date',
-        'statut_signature_etudiant' => 'boolean',
-        'statut_signature_administratif' => 'boolean',
-        'date_signature_etudiant' => 'datetime',
-        'date_signature_administratif' => 'datetime',
+        'document_signe' => 'boolean',
         'date_rendez_vous' => 'datetime',
     ];
 
@@ -131,17 +125,14 @@ class ContratHabitation extends Model
 
     public function canBeActivated(): bool
     {
-        // 1. Signatures
-        if (!$this->statut_signature_etudiant || !$this->statut_signature_administratif) {
+        // 1. Signature
+        if (!$this->document_signe) {
             return false;
         }
 
         // 2. État des lieux (Entrée) signé
         $edlEntree = $this->etatsDesLieux()
-            ->where(function ($query) {
-            $query->where('signe_etudiant', '=', true)
-                ->where('signe_concierge', '=', true);
-        })
+            ->where('document_signe', '=', true)
             ->exists();
 
         if (!$edlEntree) {

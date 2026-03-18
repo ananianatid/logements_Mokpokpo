@@ -39,8 +39,7 @@ class EditDemandeLogement extends EditRecord
                         'date_debut' => now(),
                         'date_fin' => now()->addYear(),
                         'statut' => 'Brouillon',
-                        'statut_signature_etudiant' => false,
-                        'statut_signature_administratif' => false,
+                        'document_signe' => false,
                     ]);
 
                     // Update room status to Reserved

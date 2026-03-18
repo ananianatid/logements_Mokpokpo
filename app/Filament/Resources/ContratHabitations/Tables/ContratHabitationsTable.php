@@ -61,12 +61,8 @@ class ContratHabitationsTable
                     })
                     ->searchable(),
 
-                IconColumn::make('statut_signature_etudiant')
-                    ->label('S. Étudiant')
-                    ->boolean(),
-                
-                IconColumn::make('statut_signature_administratif')
-                    ->label('S. Agent')
+                IconColumn::make('document_signe')
+                    ->label('Signé')
                     ->boolean(),
 
                 TextColumn::make('created_at')
@@ -114,8 +110,7 @@ class ContratHabitationsTable
                             'concierge_id' => $data['concierge_id'],
                             'date_execution' => now(), // prend directement la date du jour
                             'date_rendez_vous' => $data['date_rendez_vous'],
-                            'signe_etudiant' => false,
-                            'signe_concierge' => false,
+                            'document_signe' => false,
                         ]);
 
                         // 2. Create Premier versement (3 months)
