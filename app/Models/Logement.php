@@ -39,6 +39,6 @@ class Logement extends Model
 
     public function incidents()
     {
-        return $this->hasMany(Incident::class);
+        return $this->hasMany(IncidentTechnique::class);
     }
 }
