@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->font('Inter')
+            ->font('Inter', provider: \Filament\FontProviders\LocalFontProvider::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
