@@ -139,8 +139,7 @@ class ContratHabitation extends Model
         // 2. État des lieux (Entrée) signé
         $edlEntree = $this->etatsDesLieux()
             ->where(function ($query) {
-            $query->where('type', '=', 'Entrée')
-                ->where('signe_etudiant', '=', true)
+            $query->where('signe_etudiant', '=', true)
                 ->where('signe_concierge', '=', true);
         })
             ->exists();

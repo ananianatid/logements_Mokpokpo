@@ -25,13 +25,6 @@ class EtatDesLieuxForm
             ->searchable()
             ->required(),
 
-            \Filament\Forms\Components\Select::make('type')
-            ->options([
-                'Entrée' => 'Entrée',
-                'Sortie' => 'Sortie',
-            ])
-            ->required(),
-
             \Filament\Forms\Components\DatePicker::make('date_execution')
             ->label('Date d\'exécution')
             ->required()

@@ -84,7 +84,7 @@ class ContratHabitationsTable
                     ->icon('heroicon-o-home-modern')
                     ->color('info')
                     ->hidden(function ($record): bool {
-                        return $record->etatsDesLieux()->where('type', '=', 'Entrée')->exists();
+                        return $record->etatsDesLieux()->exists();
                     })
                     ->form([
                         Select::make('concierge_id')
@@ -112,7 +112,6 @@ class ContratHabitationsTable
                         EtatDesLieux::create([
                             'contrat_id' => $record->id,
                             'concierge_id' => $data['concierge_id'],
-                            'type' => 'Entrée',
                             'date_execution' => now(), // prend directement la date du jour
                             'date_rendez_vous' => $data['date_rendez_vous'],
                             'signe_etudiant' => false,

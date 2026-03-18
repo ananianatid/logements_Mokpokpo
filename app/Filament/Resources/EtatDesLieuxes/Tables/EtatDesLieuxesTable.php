@@ -22,8 +22,6 @@ class EtatDesLieuxesTable
                 TextColumn::make('concierge_id')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->searchable(),
                 TextColumn::make('date_execution')
                     ->date()
                     ->sortable(),

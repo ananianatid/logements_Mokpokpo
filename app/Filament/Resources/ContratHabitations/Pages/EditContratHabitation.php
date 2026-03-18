@@ -26,7 +26,7 @@ class EditContratHabitation extends EditRecord
                 ->icon('heroicon-o-home-modern')
                 ->color('info')
                 ->hidden(function (): bool {
-                    return $this->record->etatsDesLieux()->where('type', '=', 'Entrée')->exists();
+                    return $this->record->etatsDesLieux()->exists();
                 })
                 ->form([
                     Select::make('concierge_id')
@@ -56,7 +56,6 @@ class EditContratHabitation extends EditRecord
                     EtatDesLieux::create([
                         'contrat_id' => $record->id,
                         'concierge_id' => $data['concierge_id'],
-                        'type' => 'Entrée',
                         'date_execution' => now(), // prend directement la date du jour
                         'date_rendez_vous' => $data['date_rendez_vous'],
                         'signe_etudiant' => false,
