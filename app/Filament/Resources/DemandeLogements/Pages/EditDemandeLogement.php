@@ -57,4 +57,10 @@ class EditDemandeLogement extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['date_traitement'] = now();
+        return $data;
+    }
 }

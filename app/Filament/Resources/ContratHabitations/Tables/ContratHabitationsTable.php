@@ -135,11 +135,16 @@ class ContratHabitationsTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function ($record) {
+                        $etudiantNom = $record->etudiant->nom ?? 'Inconnu';
+                        $agentNom = $record->administratif->nom ?? 'Inconnu';
+                        $date = now()->format('dmY');
+                        $filename = "Contrat_{$etudiantNom}_{$agentNom}_{$date}.pdf";
+
                         $pdf = Pdf::loadView('pdf.contrat', ['contrat' => $record]);
                         
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->stream();
-                        }, "Contrat_{$record->id}_{$record->etudiant->nom}.pdf");
+                        }, $filename);
                     }),
             ])
             ->toolbarActions([

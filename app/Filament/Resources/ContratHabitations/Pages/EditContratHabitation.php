@@ -84,10 +84,15 @@ class EditContratHabitation extends EditRecord
                 ->color('danger')
                 ->action(function () {
                     $record = $this->record;
+                    $etudiantNom = $record->etudiant->nom ?? 'Inconnu';
+                    $agentNom = $record->administratif->nom ?? 'Inconnu';
+                    $date = now()->format('dmY');
+                    $filename = "Contrat_{$etudiantNom}_{$agentNom}_{$date}.pdf";
+
                     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.contrat', ['contrat' => $record]);
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->stream();
-                    }, "Contrat_{$record->id}_{$record->etudiant->nom}.pdf");
+                    }, $filename);
                 }),
             DeleteAction::make(),
         ];
