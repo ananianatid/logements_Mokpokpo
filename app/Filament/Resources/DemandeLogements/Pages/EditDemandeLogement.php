@@ -21,14 +21,24 @@ class EditDemandeLogement extends EditRecord
                 ->requiresConfirmation()
                 ->action(function () {
                     $demande = $this->record;
+                    $administratif = auth()->user()->administratif;
+
+                    if (!$administratif) {
+                        \Filament\Notifications\Notification::make()
+                            ->title('Erreur : Profil administratif non trouvé')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
                     
                     $contrat = \App\Models\ContratHabitation::create([
                         'etudiant_id' => $demande->etudiant_id,
                         'logement_id' => $demande->logement_propose_id,
+                        'administratif_id' => $administratif->id,
                         'demande_logement_id' => $demande->id,
                         'date_debut' => now(),
                         'date_fin' => now()->addYear(),
-                        'statut' => 'En attente',
+                        'statut' => 'Brouillon',
                         'statut_signature_etudiant' => false,
                         'statut_signature_administratif' => false,
                     ]);
