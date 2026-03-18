@@ -22,30 +22,24 @@ class PendingInspectionsWidget extends BaseWidget
     {
         return $table
             ->query(
-            EtatDesLieux::query()
-            ->where(function ($query) {
-            $query->where('signe_concierge', false)
-                ->orWhere('signe_etudiant', false);
-        })
-            ->latest()
-        )
+                EtatDesLieux::query()
+                    ->where('document_signe', false)
+                    ->latest()
+            )
             ->columns([
-            Tables\Columns\TextColumn::make('contrat.etudiant.nom')
-            ->label('Étudiant')
-            ->formatStateUsing(fn($record) => $record->contrat->etudiant->prenom . ' ' . $record->contrat->etudiant->nom),
-            Tables\Columns\TextColumn::make('contrat.logement.numero_chambre')
-            ->label('Chambre'),
-            Tables\Columns\BadgeColumn::make('type')
-            ->colors([
-                'primary' => 'Entrée',
-                'warning' => 'Sortie',
-            ]),
-            Tables\Columns\IconColumn::make('signe_concierge')
-            ->label('Signé Concierge')
-            ->boolean(),
-            Tables\Columns\IconColumn::make('signe_etudiant')
-            ->label('Signé Étudiant')
-            ->boolean(),
-        ]);
+                Tables\Columns\TextColumn::make('contrat.etudiant.nom')
+                    ->label('Étudiant')
+                    ->formatStateUsing(fn($record) => $record->contrat->etudiant->prenom . ' ' . $record->contrat->etudiant->nom),
+                Tables\Columns\TextColumn::make('contrat.logement.numero_chambre')
+                    ->label('Chambre'),
+                Tables\Columns\BadgeColumn::make('type')
+                    ->colors([
+                        'primary' => 'Entrée',
+                        'warning' => 'Sortie',
+                    ]),
+                Tables\Columns\IconColumn::make('document_signe')
+                    ->label('Document Signé')
+                    ->boolean(),
+            ]);
     }
 }

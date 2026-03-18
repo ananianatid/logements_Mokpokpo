@@ -45,12 +45,12 @@ class HousingActivationService
         $steps = [
             'signatures' => [
                 'label' => 'Signatures du contrat',
-                'done' => (bool) ($contrat->statut_signature_etudiant && $contrat->statut_signature_administratif),
+                'done' => (bool) $contrat->document_signe,
                 'date_rendez_vous' => $contrat->date_rendez_vous,
             ],
             'inspection' => [
                 'label' => "État des lieux d'entrée",
-                'done' => (bool) ($edlEntree && $edlEntree->signe_etudiant && $edlEntree->signe_concierge),
+                'done' => (bool) ($edlEntree && $edlEntree->document_signe),
                 'date_rendez_vous' => $edlEntree?->date_rendez_vous,
             ],
             'payments' => [

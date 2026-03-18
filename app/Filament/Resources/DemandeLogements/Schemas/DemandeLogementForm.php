@@ -85,8 +85,8 @@ class DemandeLogementForm
             Section::make('Informations sur l\'étudiant')
                 ->description('Détails de l\'étudiant ayant fait la demande pour guider l\'attribution.')
                 ->schema([
-                    // Ligne 1 : identité
-                    Grid::make(3)->schema([
+                    // Ligne 1 : identité & académique de base
+                    Grid::make(4)->schema([
                         Placeholder::make('student_name')
                             ->label('Nom complet')
                             ->content(fn ($record) => $record?->etudiant
@@ -100,41 +100,13 @@ class DemandeLogementForm
                         Placeholder::make('student_situation_matrimoniale')
                             ->label('Situation matrimoniale')
                             ->content(fn ($record) => $record?->etudiant?->situation_matrimoniale ?? '-'),
-                    ]),
-
-                    // Ligne 2 : contact
-                    Grid::make(3)->schema([
-                        Placeholder::make('student_email')
-                            ->label('Email personnel')
-                            ->content(fn ($record) => $record?->etudiant?->email_personnel ?? '-'),
-
-                        Placeholder::make('student_phone')
-                            ->label('Téléphone')
-                            ->content(fn ($record) => $record?->etudiant?->telephone ?? '-'),
-
-                        Placeholder::make('student_filiere')
-                            ->label('Filière')
-                            ->content(fn ($record) => $record?->etudiant?->filiere ?? '-'),
-                    ]),
-
-                    // Ligne 3 : académique
-                    Grid::make(3)->schema([
-                        Placeholder::make('student_niveau')
-                            ->label('Niveau d\'étude')
-                            ->content(fn ($record) => $record?->etudiant?->niveau_etude ?? '-'),
-
-                        Placeholder::make('student_moyenne_bac')
-                            ->label('Moyenne au BAC')
-                            ->content(fn ($record) => $record?->etudiant?->moyenne_bac
-                                ? $record->etudiant->moyenne_bac . ' / 20'
-                                : '-'),
 
                         Placeholder::make('student_annee_bac')
                             ->label('Année du BAC')
                             ->content(fn ($record) => $record?->etudiant?->annee_obtention_bac ?? '-'),
                     ]),
 
-                    // Ligne 4 : origine & distances
+                    // Ligne 2 : origine & distances
                     Grid::make(3)->schema([
                         Placeholder::make('student_prefecture')
                             ->label('Préfecture d\'origine')
@@ -159,14 +131,13 @@ class DemandeLogementForm
                                 $row = DB::table('distances_prefectures')
                                     ->where('prefecture', 'like', "%{$prefecture}%")
                                     ->first();
-                                // La distance vers le chef-lieu de la région (on affiche région + distance)
                                 return $row
                                     ? new HtmlString("{$row->region} — {$row->distance} km de Lomé")
                                     : '-';
                             }),
                     ]),
 
-                    // Ligne 5 : handicap
+                    // Ligne 3 : handicap
                     Grid::make(1)->schema([
                         Placeholder::make('student_handicaps')
                             ->label('Handicap(s) déclaré(s)')

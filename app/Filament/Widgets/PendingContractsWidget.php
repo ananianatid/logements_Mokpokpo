@@ -22,26 +22,23 @@ class PendingContractsWidget extends BaseWidget
     {
         return $table
             ->query(
-            ContratHabitation::query()->where('statut', '!=', 'Actif')->latest()
-        )
+                ContratHabitation::query()->where('statut', '!=', 'Actif')->where('document_signe', false)->latest()
+            )
             ->columns([
-            Tables\Columns\TextColumn::make('etudiant.nom')
-            ->label('Étudiant')
-            ->formatStateUsing(fn($record) => $record->etudiant->prenom . ' ' . $record->etudiant->nom),
-            Tables\Columns\TextColumn::make('logement.numero_chambre')
-            ->label('Chambre'),
-            Tables\Columns\IconColumn::make('statut_signature_etudiant')
-            ->label('Signé Étudiant')
-            ->boolean(),
-            Tables\Columns\IconColumn::make('statut_signature_administratif')
-            ->label('Signé Admin')
-            ->boolean(),
-            Tables\Columns\BadgeColumn::make('statut')
-            ->colors([
-                'warning' => 'Brouillon',
-                'success' => 'Actif',
-                'secondary' => 'Terminé',
-            ]),
+                Tables\Columns\TextColumn::make('etudiant.nom')
+                    ->label('Étudiant')
+                    ->formatStateUsing(fn($record) => $record->etudiant->prenom . ' ' . $record->etudiant->nom),
+                Tables\Columns\TextColumn::make('logement.numero_chambre')
+                    ->label('Chambre'),
+                Tables\Columns\IconColumn::make('document_signe')
+                    ->label('Signé')
+                    ->boolean(),
+                Tables\Columns\BadgeColumn::make('statut')
+                    ->colors([
+                        'warning' => 'Brouillon',
+                        'success' => 'Actif',
+                        'secondary' => 'Terminé',
+                    ]),
         ]);
     }
 }

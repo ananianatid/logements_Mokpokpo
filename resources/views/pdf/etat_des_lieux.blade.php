@@ -208,18 +208,16 @@
             <strong>Signature Étudiant</strong><br>
             <small>(Lu et approuvé)</small>
             <div class="signature-line"></div>
-            @if($edl->signe_etudiant)
-            <div style="color: green; font-size: 8pt; margin-top: 5px;">Signé numériquement le {{
-                $edl->date_signature_etudiant->format('d/m/Y H:i') }}</div>
+            @if($edl->document_signe)
+            <div style="color: green; font-size: 8pt; margin-top: 5px;">Signé numériquement</div>
             @endif
         </div>
         <div class="signature-box right">
             <strong>Signature Concierge</strong><br>
             <small>(Pour l'Administration)</small>
             <div class="signature-line"></div>
-            @if($edl->signe_concierge)
-            <div style="color: green; font-size: 8pt; margin-top: 5px;">Signé numériquement le {{
-                $edl->date_signature_concierge->format('d/m/Y H:i') }}</div>
+            @if($edl->document_signe)
+            <div style="color: green; font-size: 8pt; margin-top: 5px;">Signé numériquement</div>
             @endif
         </div>
         <div class="clear"></div>
