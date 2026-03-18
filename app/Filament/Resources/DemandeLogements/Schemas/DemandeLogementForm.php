@@ -9,8 +9,8 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 
 class DemandeLogementForm
@@ -73,31 +73,31 @@ class DemandeLogementForm
             ->label('Notes de l\'administration')
             ->columnSpanFull(),
 
-            \Filament\Forms\Components\Section::make('Informations sur l\'étudiant')
+            Section::make('Informations sur l\'étudiant')
                 ->description('Détails de l\'étudiant ayant fait la demande pour guider l\'attribution.')
                 ->schema([
-                    \Filament\Forms\Components\Grid::make(3)->schema([
-                        \Filament\Forms\Components\Placeholder::make('student_name')
+                    Grid::make(3)->schema([
+                        Placeholder::make('student_name')
                             ->label('Nom complet')
                             ->content(fn ($record) => $record?->etudiant ? "{$record->etudiant->nom} {$record->etudiant->prenom}" : '-'),
                         
-                        \Filament\Forms\Components\Placeholder::make('student_email')
+                        Placeholder::make('student_email')
                             ->label('Email personnel')
                             ->content(fn ($record) => $record?->etudiant?->email_personnel ?? '-'),
                             
-                        \Filament\Forms\Components\Placeholder::make('student_phone')
+                        Placeholder::make('student_phone')
                             ->label('Téléphone')
                             ->content(fn ($record) => $record?->etudiant?->telephone ?? '-'),
                             
-                        \Filament\Forms\Components\Placeholder::make('student_filiere')
+                        Placeholder::make('student_filiere')
                             ->label('Filière')
                             ->content(fn ($record) => $record?->etudiant?->filiere ?? '-'),
                             
-                        \Filament\Forms\Components\Placeholder::make('student_niveau')
+                        Placeholder::make('student_niveau')
                             ->label('Niveau d\'étude')
                             ->content(fn ($record) => $record?->etudiant?->niveau_etude ?? '-'),
                             
-                        \Filament\Forms\Components\Placeholder::make('student_moyenne')
+                        Placeholder::make('student_moyenne')
                             ->label('Moyenne d\'admission')
                             ->content(fn ($record) => $record?->etudiant?->moyenne_admission ? $record->etudiant->moyenne_admission . ' / 20' : '-'),
                     ])
