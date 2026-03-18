@@ -13,6 +13,17 @@ class EditContratHabitation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            \Filament\Actions\Action::make('genererPdf')
+                ->label('Générer Contrat (PDF)')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('danger')
+                ->action(function () {
+                    $record = $this->record;
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.contrat', ['contrat' => $record]);
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->stream();
+                    }, "Contrat_{$record->id}_{$record->etudiant->nom}.pdf");
+                }),
             DeleteAction::make(),
         ];
     }
