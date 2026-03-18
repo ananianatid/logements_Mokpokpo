@@ -8,6 +8,7 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Notifications\Notification;
 use App\Models\Concierge;
 use App\Models\EtatDesLieux;
@@ -41,8 +42,8 @@ class EditContratHabitation extends EditRecord
                         })
                         ->searchable()
                         ->required(),
-                    DatePicker::make('date_installation')
-                        ->label('Date d\'installation prévue')
+                    DateTimePicker::make('date_rendez_vous')
+                        ->label('Date de rendez-vous pour l\'installation')
                         ->default(function () {
                             return $this->record->date_debut;
                         })
@@ -56,7 +57,8 @@ class EditContratHabitation extends EditRecord
                         'contrat_id' => $record->id,
                         'concierge_id' => $data['concierge_id'],
                         'type' => 'Entrée',
-                        'date_execution' => $data['date_installation'],
+                        'date_execution' => now(), // prend directement la date du jour
+                        'date_rendez_vous' => $data['date_rendez_vous'],
                         'signe_etudiant' => false,
                         'signe_concierge' => false,
                     ]);
@@ -65,7 +67,7 @@ class EditContratHabitation extends EditRecord
                     $monthlyPrice = $record->logement->type_logement->prix ?? 0;
                     FacturePaiement::create([
                         'contrat_id' => $record->id,
-                        'mois_concerne' => $data['date_installation'],
+                        'mois_concerne' => now(),
                         'montant' => $monthlyPrice * 3, // Initial payment for 3 months
                         'est_premier_versement' => true,
                         'statut' => 'En attente',
