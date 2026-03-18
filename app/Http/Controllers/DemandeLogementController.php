@@ -61,4 +61,28 @@ class DemandeLogementController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Votre demande de logement a été soumise avec succès !');
     }
+
+    public function cancel(DemandeLogement $demande)
+    {
+        $user = Auth::user();
+
+        if (!$user->etudiant || $demande->etudiant_id !== $user->etudiant->id) {
+            abort(403);
+        }
+
+        // On autorise l'annulation si la demande n'est pas encore transformée en contrat actif
+        if (in_array($demande->statut, ['En attente', 'En cours', 'Validée']) && !$demande->contrat) {
+            $demande->update([
+                'statut' => 'Rejetée',
+                'note_traitement' => 'Annulée par l\'étudiant le ' . now()->format('d/m/Y H:i'),
+                'date_traitement' => now(),
+            ]);
+
+            return redirect()->route('dashboard')
+                ->with('success', 'Votre demande a été annulée avec succès.');
+        }
+
+        return redirect()->route('dashboard')
+            ->with('error', 'Cette demande ne peut plus être annulée car elle est déjà en cours de finalisation ou un contrat a été généré.');
+    }
 }

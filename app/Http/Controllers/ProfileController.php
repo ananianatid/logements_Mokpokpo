@@ -49,7 +49,6 @@ class ProfileController extends Controller
             'date_naissance' => ['required', 'date', 'before:today'],
             'sexe' => ['required', 'in:Masculin,Feminin'],
             'annee_obtention_bac' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 1)],
-            'moyenne_bac' => ['nullable', 'numeric', 'min:0', 'max:20'],
             'prefecture_origine' => ['nullable', 'string', 'max:255'],
             'situation_matrimoniale' => ['nullable', 'in:Celibataire,Marie,Divorce,Veuf'],
             'handicaps' => ['nullable', 'array'],

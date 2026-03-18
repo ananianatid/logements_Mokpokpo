@@ -83,65 +83,53 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Année d'obtention du BAC -->
                     <div>
-                        <label for="annee_obtention_bac" class="block text-sm font-semibold text-gray-700 mb-2">Année
-                            d'obtention de votre baccalauréat</label>
-                        <input type="number" name="annee_obtention_bac" id="annee_obtention_bac" min="1900"
-                            max="{{ date('Y') + 1 }}"
+                        <label for="annee_obtention_bac" class="block text-sm font-semibold text-gray-700 mb-2">Année de votre BAC</label>
+                        <input type="number" name="annee_obtention_bac" id="annee_obtention_bac"
                             value="{{ old('annee_obtention_bac', $etudiant->annee_obtention_bac) }}"
-                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-gray-600"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600 bg-gray-50"
                             readonly>
                     </div>
 
-                    <!-- Moyenne au BAC -->
+                    <!-- Situation Matrimoniale -->
                     <div>
-                        <label for="moyenne_bac" class="block text-sm font-semibold text-gray-700 mb-2">Moyenne au
-                            BAC</label>
-                        <input type="number" name="moyenne_bac" id="moyenne_bac" step="0.01" min="0" max="20"
-                            value="{{ old('moyenne_bac', $etudiant->moyenne_bac) }}" placeholder="00.00"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-gray-600"
-                            readonly>
+                        <label for="situation_matrimoniale" class="block text-sm font-semibold text-gray-700 mb-2">Situation matrimoniale</label>
+                        <select name="situation_matrimoniale" id="situation_matrimoniale"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
+                            <option value="" disabled selected>Sélectionnez...</option>
+                            <option value="Celibataire" {{ old('situation_matrimoniale', $etudiant->situation_matrimoniale) == 'Celibataire' ? 'selected' : '' }}>Célibataire</option>
+                            <option value="Marie" {{ old('situation_matrimoniale', $etudiant->situation_matrimoniale) == 'Marie' ? 'selected' : '' }}>Marié(e)</option>
+                            <option value="Divorce" {{ old('situation_matrimoniale', $etudiant->situation_matrimoniale) == 'Divorce' ? 'selected' : '' }}>Divorcé(e)</option>
+                            <option value="Veuf" {{ old('situation_matrimoniale', $etudiant->situation_matrimoniale) == 'Veuf' ? 'selected' : '' }}>Veuf/Veuve</option>
+                        </select>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Facultatif, mais recommandé pour l'évaluation de votre
-                    dossier.</p>
 
                 {{-- Préfecture d'origine --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- Région --}}
                     <div>
-                        <label for="region_select" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Région d'origine
-                        </label>
+                        <label for="region_select" class="block text-sm font-semibold text-gray-700 mb-2">Région d'origine</label>
                         <select id="region_select"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
                             <option value="">-- Sélectionnez une région --</option>
                             @foreach(array_keys($prefecturesParRegion) as $region)
-                            <option value="{{ $region }}" {{ (old('prefecture_origine', $etudiant->
-                                prefecture_origine ?? '') && str_contains(old('prefecture_origine',
-                                $etudiant->prefecture_origine ?? ''), '')) ? '' : '' }}
-                                data-region="{{ $region }}">
-                                {{ $region }}
-                            </option>
+                            <option value="{{ $region }}" data-region="{{ $region }}">{{ $region }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     {{-- Préfecture --}}
                     <div>
-                        <label for="prefecture_origine" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Préfecture d'origine
-                        </label>
+                        <label for="prefecture_origine" class="block text-sm font-semibold text-gray-700 mb-2">Préfecture d'origine</label>
                         <select name="prefecture_origine" id="prefecture_origine"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
                             <option value="">-- Choisissez d'abord une région --</option>
                             @foreach($prefecturesParRegion as $region => $prefectures)
-                            @foreach($prefectures as $prefecture)
-                            <option value="{{ $prefecture }}" data-region="{{ $region }}" {{ old('prefecture_origine',
-                                $etudiant->prefecture_origine ?? '') == $prefecture ?
-                                'selected' : '' }}>
-                                {{ $prefecture }}
-                            </option>
-                            @endforeach
+                                @foreach($prefectures as $prefecture)
+                                <option value="{{ $prefecture }}" data-region="{{ $region }}" {{ old('prefecture_origine', $etudiant->prefecture_origine ?? '') == $prefecture ? 'selected' : '' }}>
+                                    {{ $prefecture }}
+                                </option>
+                                @endforeach
                             @endforeach
                         </select>
                     </div>
@@ -196,46 +184,20 @@
                     })();
                 </script>
 
-                <!-- Situation Matrimoniale -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="situation_matrimoniale"
-                            class="block text-sm font-semibold text-gray-700 mb-2">Situation matrimoniale</label>
-                        <select name="situation_matrimoniale" id="situation_matrimoniale"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white appearance-none">
-                            <option value="" disabled selected>Sélectionnez...</option>
-                            <option value="Celibataire" {{ old('situation_matrimoniale', $etudiant->
-                                situation_matrimoniale) == 'Celibataire' ? 'selected' : '' }}>Célibataire</option>
-                            <option value="Marie" {{ old('situation_matrimoniale', $etudiant->
-                                situation_matrimoniale) ==
-                                'Marie' ? 'selected' : '' }}>Marié(e)</option>
-                            <option value="Divorce" {{ old('situation_matrimoniale', $etudiant->
-                                situation_matrimoniale)
-                                == 'Divorce' ? 'selected' : '' }}>Divorcé(e)</option>
-                            <option value="Veuf" {{ old('situation_matrimoniale', $etudiant->situation_matrimoniale)
-                                ==
-                                'Veuf' ? 'selected' : '' }}>Veuf/Veuve</option>
-                        </select>
+                <!-- Handicap - Pleine largeur pour éviter les chevauchements -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Handicap(s) éventuel(s)</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        @foreach($handicaps as $handicap)
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" name="handicaps[]" value="{{ $handicap->id }}" {{
+                                in_array($handicap->id, old('handicaps', $selectedHandicaps ?? [])) ? 'checked' : '' }}
+                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700 group-hover:text-blue-600 transition">{{ $handicap->nom }}</span>
+                        </label>
+                        @endforeach
                     </div>
-
-                    <!-- Handicap -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Handicap(s)
-                            éventuel(s)</label>
-                        <div class="grid grid-cols-2 gap-2 bg-white p-3 rounded-xl border border-gray-300">
-                            @foreach($handicaps as $handicap)
-                            <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="checkbox" name="handicaps[]" value="{{ $handicap->id }}" {{
-                                    in_array($handicap->id, old('handicaps', $selectedHandicaps ?? [])) ? 'checked'
-                                : '' }}
-                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="text-sm text-gray-600 group-hover:text-blue-600 transition">{{
-                                    $handicap->nom }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Cochez les options qui s'appliquent à vous.</p>
-                    </div>
+                    <p class="text-[10px] text-gray-500">Cochez les options qui s'appliquent à vous. Ces informations nous aident à mieux vous attribuer un logement adapté.</p>
                 </div>
 
                 <!-- Submit Button -->

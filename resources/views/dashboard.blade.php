@@ -211,7 +211,7 @@
                     </span>
                 </div>
 
-                <div class="space-y-2 text-xs text-gray-600">
+                <div class="space-y-4 text-xs text-gray-600">
                     <div class="flex justify-between">
                         <span>Bâtiment :</span>
                         <span class="font-medium text-gray-800">{{ $demande->batiment ? $demande->batiment->nom
@@ -225,11 +225,25 @@
                     </div>
                     @endif
                 </div>
-                <a href="{{ route('residences.index') }}"
-                    class="flex justify-center items-center gap-2 bg-white border border-gray-200 text-gray-700 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-sm mt-4">
-                    <i class="fas fa-building text-blue-500"></i>
-                    Voir les autres résidences
-                </a>
+
+                <div class="mt-4 flex flex-col gap-2">
+                    @if(in_array($demande->statut, ['En attente', 'En cours', 'Validée']) && !$contrat)
+                    <button onclick="if(confirm('Êtes-vous sûr de vouloir annuler votre demande ?')) document.getElementById('cancel-demande-form').submit();"
+                        class="w-full flex justify-center items-center gap-2 bg-red-50 text-red-600 py-2 rounded-lg text-xs font-bold hover:bg-red-100 transition border border-red-100">
+                        <i class="fas fa-times-circle"></i>
+                        Annuler ma demande
+                    </button>
+                    <form id="cancel-demande-form" action="{{ route('demandes.cancel', $demande) }}" method="POST" class="hidden">
+                        @csrf
+                    </form>
+                    @endif
+                    
+                    <a href="{{ route('residences.index') }}"
+                        class="flex justify-center items-center gap-2 bg-white border border-gray-200 text-gray-700 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-sm">
+                        <i class="fas fa-building text-blue-500"></i>
+                        Voir les autres résidences
+                    </a>
+                </div>
             </div>
             @else
             <div class="text-center py-6 text-gray-500">
